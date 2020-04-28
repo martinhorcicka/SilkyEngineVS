@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SilkyEngine": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}
