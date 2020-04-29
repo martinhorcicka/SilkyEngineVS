@@ -39,6 +39,7 @@ namespace SilkyEngine.Sources.Controls
             mouse.MouseMove += OnMouseMove;
             mouse.MouseDown += OnMouseDown;
             mouse.MouseUp += OnMouseUp;
+            mouse.Scroll += OnScroll;
 
             foreach (var kb in input.Keyboards)
             {
@@ -52,6 +53,7 @@ namespace SilkyEngine.Sources.Controls
 
         protected override abstract void OnUpdate(double deltaTime);
         protected abstract void OnMouseMove(IMouse mouse, PointF point);
+        protected abstract void OnScroll(IMouse mouse, ScrollWheel wheel);
         protected virtual void OnMouseDown(IMouse mouse, MouseButton button)
         {
             if (mouseButtons.Contains(button))

@@ -21,13 +21,12 @@ namespace SilkyEngine.Sources.Behaviors
             this.speed = speed;
             this.heightMap = heightMap;
         }
-
         protected override void OnUpdate(double deltaTime)
         {
             foreach (var e in entities)
             {
                 RotateEntity(e, speed * (float)deltaTime);
-                e.SetHeight(2+heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0);
+                e.SetHeight(2 + heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0);
             }
         }
 

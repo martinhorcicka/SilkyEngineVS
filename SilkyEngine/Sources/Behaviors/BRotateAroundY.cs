@@ -9,7 +9,6 @@ namespace SilkyEngine.Sources.Behaviors
         {
             this.speed = speed;
         }
-
         protected override void OnUpdate(double deltaTime)
         {
             foreach (var e in entities)

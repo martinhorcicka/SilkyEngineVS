@@ -24,15 +24,19 @@ namespace SilkyEngine.Sources.Entities
 
         public TexturedModel TexturedModel => texturedModel;
         public void SetHeight(float newHeight) => position.Y = newHeight;
-        public Vector3 Position => position;
+        public Vector3 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
         public Vector3 Rotation => rotation;
         public float Scale => scale;
 
-        internal virtual void Translate(Vector3 dp) => position += dp;
-        internal virtual void RotateX(float angle) => rotation.X += angle;
-        internal virtual void RotateY(float angle) => rotation.Y += angle;
-        internal virtual void RotateZ(float angle) => rotation.Z += angle;
-        internal virtual void RotateAroundAxis(Vector3 axis, float angle) => rotation += axis * angle;
+        public virtual void Translate(Vector3 dp) => position += dp;
+        public virtual void RotateX(float angle) => rotation.X += angle;
+        public virtual void RotateY(float angle) => rotation.Y += angle;
+        public virtual void RotateZ(float angle) => rotation.Z += angle;
+        public virtual void RotateAroundAxis(Vector3 axis, float angle) => rotation += axis * angle;
 
     }
 }

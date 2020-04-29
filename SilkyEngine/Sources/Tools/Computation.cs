@@ -1,5 +1,6 @@
 using MathNet.Numerics.Integration;
 using System;
+using System.Linq;
 using System.Numerics;
 
 namespace SilkyEngine.Sources.Tools
@@ -10,6 +11,7 @@ namespace SilkyEngine.Sources.Tools
         private static float mollifierNormalizationConstant = Integrate2D(BumpFunction);
         public static Func<float, float, float> Mollifier = (x, y) => BumpFunction(x, y) / mollifierNormalizationConstant;
         public static Func<float, float, float, float> EMollifier = (eps, x, y) => Mollifier(x / eps, y / eps) / (eps * eps);
+        public static float Average(params float[] nums) => nums.Average();
         public static float RadToDeg(float rad) => rad / MathF.PI * 180f;
         public static float DegToRad(float deg) => deg * MathF.PI / 180f;
         public static float AngleBetweenVectors(Vector3 v, Vector3 w) => MathF.Acos(Vector3.Dot(v, w) / (v.Length() * w.Length()));

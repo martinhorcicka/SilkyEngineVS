@@ -16,6 +16,9 @@ namespace SilkyEngine.Sources.Controls
         private Camera camera;
         private Player player;
         private Func<float, float, float> HeightMap;
+        private const float MIN_DISTANCE = 1;
+        private const float MAX_DISTANCE = 25;
+        private const float DEFAULT_HEIGHT = 5;
         private Vector2 prevMousePos;
         private float distance, verticalSpeed;
         private const float gravity = 10f;
@@ -26,13 +29,14 @@ namespace SilkyEngine.Sources.Controls
         {
             window.CreateInput().Mice[0].Cursor.CursorMode = CursorMode.Normal;
             verticalSpeed = 0;
+            distance = Computation.Average(MIN_DISTANCE, MAX_DISTANCE);
             inAir = true;
         }
 
         protected override void OnMouseDown(IMouse mouse, MouseButton button)
         {
             base.OnMouseDown(mouse, button);
-            mouse.Cursor.CursorMode = CursorMode.Hidden;
+            mouse.Cursor.CursorMode = CursorMode.Disabled;
             if (isMBPressed[MouseButton.Right])
                 player.SnapToFront(camera.Front);
 
@@ -50,33 +54,34 @@ namespace SilkyEngine.Sources.Controls
 
             if (isMBPressed[MouseButton.Right] || isMBPressed[MouseButton.Left])
             {
-                float terraintHeight = HeightMap?.Invoke(camera.Position.X, camera.Position.Z) ?? 0.1f;
-                Vector3 dPos = Vector3.Zero;
 
                 float yawChange = deltaMouse.X * mouseSensitivity;
                 float pitchChange = deltaMouse.Y * mouseSensitivity;
                 if (isMBPressed[MouseButton.Right])
                     player.RotateY(-yawChange);
 
-                camera.ChangeYaw(yawChange);
-                if (camera.ChangePitch(-pitchChange)) pitchChange = 0;
-
-                float cy = MathF.Cos(yawChange), sy = MathF.Sin(yawChange);
-
-                distance = Vector3.Distance(player.Focus, camera.Position);
-                Vector3 R = Vector3.Normalize(camera.Position - player.Focus);
-                Vector3 orthToRinXZ = Vector3.Normalize(new Vector3(-R.Z, 0, R.X));
-                var rot = Matrix4x4.CreateFromAxisAngle(orthToRinXZ, -pitchChange);
-                R = Computation.MatMul(rot, R);
-
-                Vector3 nR;
-                nR.X = cy * R.X - sy * R.Z;
-                nR.Y = R.Y;
-                nR.Z = sy * R.X + cy * R.Z;
-
-                dPos = player.Focus + nR * distance - camera.Position;
-                camera.Translate(dPos);
+                RecalculateCamera(yawChange, pitchChange);
             }
+        }
+
+        private void RecalculateCamera(float yawChange, float pitchChange)
+        {
+            //float terraintHeight = HeightMap?.Invoke(camera.Position.X, camera.Position.Z) ?? 0.0f;
+            //if (camera.Position.Y <= terraintHeight)
+            //    camera.SetHeight(DEFAULT_HEIGHT + terraintHeight + player.Focus.Y);
+            //else
+            //    camera.SetHeight(DEFAULT_HEIGHT + player.Focus.Y);
+            camera.ChangeYaw(yawChange);
+            if (camera.ChangePitch(-pitchChange)) pitchChange = 0;
+            //pitchChange = 0;
+
+            Vector3 R = Vector3.Normalize(camera.Position - player.Focus);
+            Vector3 orthToRinXZ = Vector3.Normalize(new Vector3(R.Z, 0, -R.X));
+            var rot = Matrix4x4.CreateFromAxisAngle(orthToRinXZ, pitchChange);
+            var rotY = Matrix4x4.CreateFromAxisAngle(Vector3.UnitY, yawChange);
+            R = Computation.MatMul(rotY * rot, R);
+
+            camera.Position = player.Focus + R * distance;
         }
 
         protected override void OnUpdate(double deltaTime)
@@ -93,19 +98,19 @@ namespace SilkyEngine.Sources.Controls
             if (isPressed[Key.D])
                 dPos += player.Right;
 
-            player.Translate(dPos * speed);
-            camera.Translate(dPos * speed);
+            player.Position += dPos * speed;
+            camera.Position += dPos * speed;
 
             verticalSpeed -= gravity * (float)deltaTime;
-            player.Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
-            camera.Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
+            player.Position += Vector3.UnitY * verticalSpeed * (float)deltaTime;
+            camera.Position += Vector3.UnitY * verticalSpeed * (float)deltaTime;
 
             float terraintHeight = HeightMap?.Invoke(player.Position.X, player.Position.Z) ?? 0f;
             if (player.Position.Y < terraintHeight)
             {
                 verticalSpeed = 0;
                 inAir = false;
-                float dHeight = camera.Position.Y - player.Position.Y; 
+                float dHeight = camera.Position.Y - player.Position.Y;
                 player.SetHeight(terraintHeight);
                 camera.SetHeight(terraintHeight + dHeight);
             }
@@ -123,6 +128,13 @@ namespace SilkyEngine.Sources.Controls
                     break;
             }
         }
+        protected override void OnScroll(IMouse mouse, ScrollWheel wheel)
+        {
+            distance -= wheel.Y;
+            if (distance < MIN_DISTANCE) distance = MIN_DISTANCE;
+            else if (distance > MAX_DISTANCE) distance = MAX_DISTANCE;
+            RecalculateCamera(0, 0);
+        }
 
         private void Jump()
         {
@@ -132,7 +144,14 @@ namespace SilkyEngine.Sources.Controls
 
         public void SubscribePlayer(Player player) => this.player = player;
 
-        public void SubscribeCamera(Camera camera) => this.camera = camera;
+        public void SubscribeCamera(Camera camera)
+        {
+            this.camera = camera;
+            float xzDistance = MathF.Sqrt(distance * distance - DEFAULT_HEIGHT * DEFAULT_HEIGHT);
+            Vector3 relCamPos = xzDistance * (-player.Front) + DEFAULT_HEIGHT * Vector3.UnitY;
+            camera.Position = relCamPos + player.Focus;
+            camera.Front = player.Focus - camera.Position;
+        }
 
         public void SubscribeHeightMap(Func<float, float, float> HeightMap) => this.HeightMap = HeightMap;
     }

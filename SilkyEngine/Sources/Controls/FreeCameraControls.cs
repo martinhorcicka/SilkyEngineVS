@@ -31,6 +31,11 @@ namespace SilkyEngine.Sources.Controls
             camera.ChangePitch(-deltaMouse.Y * mouseSensitivity);
         }
 
+        protected override void OnScroll(IMouse mouse, ScrollWheel wheel)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void OnUpdate(double deltaTime)
         {
             float speed = movementSpeed * (float)deltaTime;

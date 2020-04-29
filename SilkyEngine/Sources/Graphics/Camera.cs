@@ -8,23 +8,36 @@ namespace SilkyEngine.Sources.Graphics
     public class Camera
     {
         private static Func<float, float> sin = MathF.Sin, cos = MathF.Cos;
-        private static float MAX_PITCH { get; } = Computation.DegToRad(89f);
-        private Vector3 position, front, right, up = Vector3.UnitY;
+        private static float MAX_PITCH { get; } = Computation.DegToRad(80f);
+        private Vector3 position, front, up = Vector3.UnitY;
         private float pitch, yaw;
 
         public void SetHeight(float newHeight) => position.Y = newHeight;
-        public Vector3 Position => position;
-        public Vector3 Front => front;
+        public Vector3 Position
+        {
+            get { return position; }
+            set { position = value; }
+        }
+        public Vector3 Front
+        {
+            get { return front; }
+            set
+            {
+                front = Vector3.Normalize(value);
+                RecalculateEulers();
+            }
+        }
         public Vector3 Up => up;
-        public Vector3 Right => right;
-        
+        public Vector3 Right
+        {
+            get { return Vector3.Normalize(Vector3.Cross(front, up)); }
+        }
+
         public Camera(ICameraController controls, Vector3 position, Vector3 target)
         {
-            controls.SubscribeCamera(this);
             this.position = position;
-            var tmp = target - position;
-            this.front = Vector3.Normalize(tmp);
-            right = Vector3.Normalize(Vector3.Cross(front, up));
+            Front = target - position;
+            controls.SubscribeCamera(this);
 
             RecalculateEulers();
         }
@@ -42,7 +55,6 @@ namespace SilkyEngine.Sources.Graphics
             front.X = cy * cp;
             front.Y = sp;
             front.Z = sy * cp;
-            right = Vector3.Normalize(Vector3.Cross(front, up));
         }
 
         private void RecalculateEulers()

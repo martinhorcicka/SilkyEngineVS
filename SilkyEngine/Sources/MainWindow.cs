@@ -50,10 +50,10 @@ namespace SilkyEngine.Sources
             Func<float, float> sin = MathF.Sin, cos = MathF.Cos;
             Func<float, float, float> CustomHeightMap = (x, y) =>
             {
-                x /= 10; y /= 10;
+                x /= 1; y /= 1;
                 x -= 4;
                 float f = sin(cos(x)) * sin(cos(y));
-                return 4*f;
+                return f;
             };
 
             var input = window.CreateInput();
@@ -68,14 +68,14 @@ namespace SilkyEngine.Sources
 
             basicShader = loader.LoadShader("basic");
             terrainShader = loader.LoadShader("basicTerrain");
-            terrainShader.SubscribeUniform("texScale", 5f);
+            terrainShader.SubscribeUniform("texScale", 2f);
             lightShader = loader.LoadShader("simpleLight");
 
             // freeCam = new FreeCameraControls(window);
             thirdPerson = new ThirdPersonControls(window);
 
             heightMap = new HeightMap("ltm_heightmap.png", new RectangleF(-100, -100, 200, 200), 0, 20);
-            Func<float, float, float> tmpGetHeight = CustomHeightMap;
+            Func<float, float, float> tmpGetHeight = heightMap.GetHeight;
 
             Func<float, float, float, Vector3> newPosition = (x, y, z) => new Vector3(x, y + tmpGetHeight(x, z), z);
             player = new Player((IPlayerController)thirdPerson, loader.FromOBJ("capsule", "red", "jpg"), newPosition(0, 0, 0), Vector3.Zero, 1f);
@@ -94,7 +94,7 @@ namespace SilkyEngine.Sources
 
             renderer = new Renderer(gl, window, (ICameraController)thirdPerson, new Vector3(0, 3, -15), player);
             renderer.SubscribeRenderables(basicEntities, basicShader);
-            renderer.SubscribeRenderables(Generator.HeightMapTerrain(loader, "green", "jpg", tmpGetHeight), terrainShader);
+            renderer.SubscribeRenderables(Generator.HeightMapTerrain(loader, "grass", "png", 5, tmpGetHeight), terrainShader);
 
             LightStruct light = new LightStruct(
                 name: "light",

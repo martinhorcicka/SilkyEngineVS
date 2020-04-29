@@ -17,7 +17,7 @@ namespace SilkyEngine.Sources.Entities
             this.lightStruct = lightStruct;
         }
 
-        internal override void Translate(Vector3 dp)
+        public override void Translate(Vector3 dp)
         {
             base.Translate(dp);
             lightStruct.position = position;

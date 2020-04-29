@@ -20,14 +20,13 @@ namespace SilkyEngine.Sources.Tools
             return new Entity(Behavior.DoNothing, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
         }
 
-        public static List<Entity> HeightMapTerrain(Loader loader, string texName, string format, Func<float, float, float> HeightMap)
+        public static List<Entity> HeightMapTerrain(Loader loader, string texName, string format, float density, Func<float, float, float> HeightMap)
         {
             Func<Point, Point> inX = p => { ++p.X; return p; }, inY = p => { ++p.Y; return p; };
             int N = 4;
             int stepSize = 20;
             Point p = new Point(-N * stepSize / 2, -N * stepSize / 2);
             Size s = new Size(stepSize, stepSize);
-            float density = 1f;
 
             var terrainPlanes = new List<Entity>(N * N);
             Point varPoint = p;
