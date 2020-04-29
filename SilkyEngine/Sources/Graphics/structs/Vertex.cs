@@ -11,6 +11,8 @@ namespace SilkyEngine.Sources.Graphics.Structs
         private Vector2 texCoords;
         private Vector3 normal;
 
+        public Vector3 Position => position;
+
         public Vertex(Vector3 position, Vector2 texCoords, Vector3 normal)
         {
             this.position = position;

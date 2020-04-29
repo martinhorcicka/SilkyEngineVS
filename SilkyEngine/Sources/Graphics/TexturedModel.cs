@@ -1,5 +1,6 @@
 using Silk.NET.OpenGL;
 using SilkyEngine.Sources.Interfaces;
+using System.Numerics;
 
 namespace SilkyEngine.Sources.Graphics
 {
@@ -8,6 +9,7 @@ namespace SilkyEngine.Sources.Graphics
         private RawModel rawModel;
         private Texture texture;
         public uint VertCount => (uint)rawModel.VertexCount;
+        public Vector3 Center => rawModel.Center;
      
         public TexturedModel (RawModel rawModel, Texture texture)
         {

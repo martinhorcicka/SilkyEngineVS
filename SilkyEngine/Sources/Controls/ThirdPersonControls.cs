@@ -7,6 +7,7 @@ using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Physics;
 using SilkyEngine.Sources.Tools;
 
 namespace SilkyEngine.Sources.Controls
@@ -33,7 +34,6 @@ namespace SilkyEngine.Sources.Controls
             distance = Computation.Average(MIN_DISTANCE, MAX_DISTANCE);
             inAir = true;
         }
-
 
         protected override void OnMouseDown(IMouse mouse, MouseButton button)
         {
@@ -139,6 +139,22 @@ namespace SilkyEngine.Sources.Controls
             if (distance < MIN_DISTANCE) distance = MIN_DISTANCE;
             else if (distance > MAX_DISTANCE) distance = MAX_DISTANCE;
             RecalculateCamera(0, 0);
+        }
+
+        public void OnCollision(CollisionEventArgs eventArgs)
+        {
+            var pe = eventArgs.Unwrap();
+            if (pe.Item1 == null) return;
+
+            Player p = pe.Item1;
+            Entity e = pe.Item2;
+            float speed = movementSpeed * (float)eventArgs.DeltaTime;
+
+            Vector3 R = Vector3.Normalize(p.Position - e.Position);
+
+            p.Translate(R * speed);
+            camera.Translate(R * speed);
+
         }
 
         private void Jump()

@@ -13,6 +13,7 @@ using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Graphics.Structs;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Physics;
 using SilkyEngine.Sources.Tools;
 
 namespace SilkyEngine.Sources
@@ -33,6 +34,7 @@ namespace SilkyEngine.Sources
             window.Load += OnLoad;
             window.Render += OnRender;
             window.Update += OnUpdate;
+            window.Update += CollisionDetection.CheckForCollisions;
             window.Closing += OnClose;
         }
 
@@ -62,6 +64,7 @@ namespace SilkyEngine.Sources
             loader = new Loader(gl);
             world = new World(window, loader);
             var controls = new ThirdPersonControls(window);
+            CollisionDetection.Collision += controls.OnCollision;
             controls.SubscribeHeightMap(world.GetHeight);
             controls.SubscribeWorld(world);
             world.MakePlayer(loader, "capsule", "blue", "jpg", controls);

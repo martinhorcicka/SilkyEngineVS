@@ -1,5 +1,6 @@
 
 using System;
+using System.Numerics;
 using Silk.NET.OpenGL;
 using SilkyEngine.Sources.Interfaces;
 
@@ -9,12 +10,14 @@ namespace SilkyEngine.Sources.Graphics
     {
         private uint VAO;
         public int VertexCount { get; }
+        public Vector3 Center { get; }
         private GL gl;
 
-        public RawModel(GL gl, uint vAO, int vertexCount)
+        public RawModel(GL gl, uint vAO, int vertexCount, Vector3 center)
         {
             VAO = vAO;
             VertexCount = vertexCount;
+            Center = center;
             this.gl = gl;
         }
 

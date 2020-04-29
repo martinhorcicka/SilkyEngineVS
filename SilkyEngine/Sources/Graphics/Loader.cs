@@ -33,6 +33,11 @@ namespace SilkyEngine.Sources.Graphics
                 return rawModels[rawModelName];
 
             var vertices = vertexGetter();
+            var center = Vector3.Zero;
+            foreach (var v in vertices)
+                center += v.Position;
+
+            center /= vertices.Length;
 
             uint VAO = gl.GenVertexArray();
             gl.BindVertexArray(VAO);
@@ -54,7 +59,7 @@ namespace SilkyEngine.Sources.Graphics
             gl.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, (uint)sizeof(Vertex), (void*)(sizeof(Vector2) + sizeof(Vector3)));
 
 
-            RawModel newRawModel = new RawModel(gl, VAO, vertices.Length);
+            RawModel newRawModel = new RawModel(gl, VAO, vertices.Length, center);
             rawModels.Add(rawModelName, newRawModel);
             return newRawModel;
         }

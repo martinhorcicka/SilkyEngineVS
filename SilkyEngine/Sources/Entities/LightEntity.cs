@@ -4,6 +4,7 @@ using System.Numerics;
 using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Graphics.Structs;
+using SilkyEngine.Sources.Physics;
 
 namespace SilkyEngine.Sources.Entities
 {
@@ -11,8 +12,8 @@ namespace SilkyEngine.Sources.Entities
     {
         public event Action LightMoved;
         private LightStruct lightStruct;
-        public LightEntity(Behavior behavior, LightStruct lightStruct, TexturedModel texturedModel, float scale)
-            : base(behavior, texturedModel, lightStruct.position, Vector3.Zero, scale)
+        public LightEntity(BoundingBox boundingBox, Behavior behavior, LightStruct lightStruct, TexturedModel texturedModel, float scale)
+            : base(boundingBox, behavior, texturedModel, lightStruct.position, Vector3.Zero, scale)
         {
             this.lightStruct = lightStruct;
         }

@@ -5,6 +5,7 @@ using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Graphics.Structs;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Physics;
 using SilkyEngine.Sources.Tools;
 using System;
 using System.Collections.Generic;
@@ -71,43 +72,26 @@ namespace SilkyEngine.Sources
             return isWalkable[(int)x, (int)z];
         }
 
-        private void DisableWalking(Vector3 position)
-        {
-            float x = position.X, z = position.Z;
-            if (!walkableArea.Contains(x, z))
-                return;
-
-            x += walkableArea.Width / 2;
-            z += walkableArea.Height / 2;
-
-            isWalkable[(int)x, (int)z] = false;
-        }
-
         public float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
 
         public void MakePlayer(Loader loader, string OBJModel, string texName, string texFormat, IPlayerController controller)
         {
-            player = new Player(controller, loader.FromOBJ(OBJModel, texName, texFormat), newPosition(0, 0, 0), Vector3.Zero, 1f);
+            player = new Player(BoundingBox.Default, controller, loader.FromOBJ(OBJModel, texName, texFormat), newPosition(0, 0, 0), Vector3.Zero, 1f);
         }
 
         private void CreateTerrain(Loader loader)
         {
-            terrain = Generator.HeightMapTerrain(loader, "grass", "png", 2f, heightMap.GetHeight);
+            terrain = Generator.HeightMapTerrain(loader, "grass", "png", 1f, heightMap.GetHeight);
         }
 
         private void CreateObstacles(Loader loader, params Behavior[] behaviors)
         {
             obstacles = new List<Entity>()
             {
-                new Entity(Behavior.DoNothing ,loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.5f,0.5f), Vector3.Zero, 0.5f),
-                new Entity(behaviors[0],loader.FromOBJ("diamond", "white", "jpg"), newPosition(0.5f,0.5f,3.5f), Vector3.Zero, 0.5f),
-                new Entity(behaviors[1],loader.FromOBJ("icosahedron", "yellow", "jpg"), newPosition(0.5f,0.5f,-3.5f), Vector3.Zero, 0.5f),
+                new Entity(BoundingBox.Default, Behavior.DoNothing ,loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.5f,0.5f), Vector3.Zero, 0.5f),
+                new Entity(BoundingBox.Default, behaviors[0],loader.FromOBJ("diamond", "white", "jpg"), newPosition(0.5f,0.5f,3.5f), Vector3.Zero, 0.5f),
+                new Entity(BoundingBox.Default, behaviors[1],loader.FromOBJ("icosahedron", "yellow", "jpg"), newPosition(0.5f,0.5f,-3.5f), Vector3.Zero, 0.5f),
             };
-
-            foreach (var e in obstacles)
-            {
-                DisableWalking(e.Position);
-            }
         }
 
         private void CreateLights(Loader loader, params Behavior[] behaviors)
@@ -133,9 +117,9 @@ namespace SilkyEngine.Sources
 
             lights = new List<LightEntity>()
             {
-                new LightEntity(behaviors[0], light3, lightModel, 0.15f),
-                new LightEntity(Behavior.DoNothing, light, lightModel, 10f),
-                new LightEntity(behaviors[1], light2, lightModel, 0.2f),
+                new LightEntity(BoundingBox.None, behaviors[0], light3, lightModel, 0.15f),
+                new LightEntity(BoundingBox.None, Behavior.DoNothing, light, lightModel, 10f),
+                new LightEntity(BoundingBox.None, behaviors[1], light2, lightModel, 0.2f),
             };
         }
 

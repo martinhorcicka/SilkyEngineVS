@@ -2,6 +2,7 @@ using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Graphics.Structs;
+using SilkyEngine.Sources.Physics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -17,7 +18,7 @@ namespace SilkyEngine.Sources.Tools
         {
             string name = HeightMap.ToString() + "Terrain" + num.ToString();
             TexturedModel model = new TexturedModel(loader.LoadRawModel(name, () => HeightMapTerrainVertices(area, density, HeightMap)), loader.LoadTexture(format, texName));
-            return new Entity(Behavior.DoNothing, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
+            return new Entity(BoundingBox.None, Behavior.DoNothing, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
         }
 
         public static List<Entity> HeightMapTerrain(Loader loader, string texName, string format, float density, Func<float, float, float> HeightMap)
