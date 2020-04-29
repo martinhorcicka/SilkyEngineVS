@@ -23,5 +23,10 @@ namespace SilkyEngine.Sources.Graphics.Structs
             this.linear = linear;
             this.quadratic = quadratic;
         }
+
+        public LightStruct NewNameCopy(string newName)
+        {
+            return new LightStruct(newName, position, ambient, diffuse, specular, constant, linear, quadratic);
+        }
     }
 }

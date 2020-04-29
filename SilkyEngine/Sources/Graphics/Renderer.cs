@@ -16,13 +16,14 @@ namespace SilkyEngine.Sources.Graphics
         private IWindow window;
         private Camera camera;
         private List<LightEntity> lights = new List<LightEntity>();
-        private Dictionary<Shader, Dictionary<TexturedModel, List<Entity>>> renderables = new Dictionary<Shader, Dictionary<TexturedModel, List<Entity>>>();
+        private Dictionary<ShaderTypes, Dictionary<TexturedModel, List<Entity>>> renderables = new Dictionary<ShaderTypes, Dictionary<TexturedModel, List<Entity>>>();
+        private Dictionary<ShaderTypes, Shader> shaders = new Dictionary<ShaderTypes, Shader>();
         private Matrix4x4 projectionMatrix;
-        public Renderer(GL gl, IWindow window, ICameraController controls, Vector3 cameraPos, Player player)
+        public Renderer(GL gl, IWindow window, ICameraController controls)
         {
             this.gl = gl;
             this.window = window;
-            camera = new Camera(controls, cameraPos, player.Focus);
+            camera = new Camera(controls, new Vector3(0, 3, -15), Vector3.Zero);
 
             window.Resize += OnResize;
         }
@@ -41,13 +42,22 @@ namespace SilkyEngine.Sources.Graphics
             MakeProjection();
         }
 
-        public void SubscribeRenderables<T>(List<T> entities, Shader shader) where T : Entity
+        public void SubscribeShader(ShaderTypes type, Shader shader)
         {
-            foreach (var entity in entities)
-                SubscribeRenderable(entity, shader);
+            if (shaders.ContainsKey(type))
+                return;
+
+            shaders.Add(type, shader);
+            renderables.Add(type, new Dictionary<TexturedModel, List<Entity>>());
         }
 
-        public void SubscribeRenderable(Entity entity, Shader shader)
+        public void SubscribeRenderables<T>(List<T> entities, ShaderTypes shaderType) where T : Entity
+        {
+            foreach (var entity in entities)
+                SubscribeRenderable(entity, shaderType);
+        }
+
+        public void SubscribeRenderable(Entity entity, ShaderTypes shaderType)
         {
             if (entity is LightEntity)
             {
@@ -56,35 +66,35 @@ namespace SilkyEngine.Sources.Graphics
                 lights.Add(newLight);
                 UpdateLights();
             }
-            if (!renderables.ContainsKey(shader))
+            if (!renderables.ContainsKey(shaderType))
+                throw new Exception("Shader of this type is not subscribed!");
+
+            if (renderables[shaderType].Count == 0)
             {
-                renderables.Add(shader, new Dictionary<TexturedModel, List<Entity>>()
-                {
-                    { entity.TexturedModel, new List<Entity>() { entity } }
-                });
+                renderables[shaderType].Add(entity.TexturedModel, new List<Entity>() { entity });
                 UpdateLights();
-                shader.SubscribeUniform("model", Matrix4x4.Identity);
-                shader.SubscribeUniform("itModel", Matrix4x4.Identity);
-                shader.SubscribeUniform("view", Matrix4x4.Identity);
-                shader.SubscribeUniform("proj", Matrix4x4.Identity);
-                shader.SubscribeUniform("viewPos", Vector3.One);
+                shaders[shaderType].SubscribeUniform("model", Matrix4x4.Identity);
+                shaders[shaderType].SubscribeUniform("itModel", Matrix4x4.Identity);
+                shaders[shaderType].SubscribeUniform("view", Matrix4x4.Identity);
+                shaders[shaderType].SubscribeUniform("proj", Matrix4x4.Identity);
+                shaders[shaderType].SubscribeUniform("viewPos", Vector3.One);
                 return;
             }
 
-            if (!renderables[shader].ContainsKey(entity.TexturedModel))
+            if (!renderables[shaderType].ContainsKey(entity.TexturedModel))
             {
-                renderables[shader].Add(entity.TexturedModel, new List<Entity>() { entity });
+                renderables[shaderType].Add(entity.TexturedModel, new List<Entity>() { entity });
                 return;
             }
 
-            renderables[shader][entity.TexturedModel].Add(entity);
+            renderables[shaderType][entity.TexturedModel].Add(entity);
         }
 
         private void UpdateLights()
         {
             foreach (var item in renderables)
             {
-                Shader shader = item.Key;
+                Shader shader = shaders[item.Key];
                 foreach (var light in lights)
                 {
                     shader.SubscribeUniform(light.GetLightStructName(), light.GetLightStruct());
@@ -96,7 +106,7 @@ namespace SilkyEngine.Sources.Graphics
         {
             foreach (var item in renderables)
             {
-                Shader shader = item.Key;
+                Shader shader = shaders[item.Key];
                 foreach (var light in lights)
                 {
                     shader.Bind();
@@ -110,7 +120,7 @@ namespace SilkyEngine.Sources.Graphics
             gl.Clear((uint)(GLEnum.ColorBufferBit | GLEnum.DepthBufferBit));
             foreach (var renderable in renderables)
             {
-                Shader shader = renderable.Key;
+                Shader shader = shaders[renderable.Key];
                 shader.Bind();
                 shader.UpdateUniform("proj", projectionMatrix);
                 camera.UpdateView(shader);

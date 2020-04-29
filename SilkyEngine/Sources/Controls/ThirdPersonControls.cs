@@ -15,6 +15,7 @@ namespace SilkyEngine.Sources.Controls
     {
         private Camera camera;
         private Player player;
+        private World world;
         private Func<float, float, float> HeightMap;
         private const float MIN_DISTANCE = 1;
         private const float MAX_DISTANCE = 25;
@@ -32,6 +33,7 @@ namespace SilkyEngine.Sources.Controls
             distance = Computation.Average(MIN_DISTANCE, MAX_DISTANCE);
             inAir = true;
         }
+
 
         protected override void OnMouseDown(IMouse mouse, MouseButton button)
         {
@@ -98,12 +100,15 @@ namespace SilkyEngine.Sources.Controls
             if (isPressed[Key.D])
                 dPos += player.Right;
 
-            player.Position += dPos * speed;
-            camera.Position += dPos * speed;
+            if (world.IsWalkable(player.Position + dPos))
+            {
+                player.Translate(dPos * speed);
+                camera.Translate(dPos * speed);
+            }
 
             verticalSpeed -= gravity * (float)deltaTime;
-            player.Position += Vector3.UnitY * verticalSpeed * (float)deltaTime;
-            camera.Position += Vector3.UnitY * verticalSpeed * (float)deltaTime;
+            player.Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
+            camera.Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
 
             float terraintHeight = HeightMap?.Invoke(player.Position.X, player.Position.Z) ?? 0f;
             if (player.Position.Y < terraintHeight)
@@ -152,6 +157,8 @@ namespace SilkyEngine.Sources.Controls
             camera.Position = relCamPos + player.Focus;
             camera.Front = player.Focus - camera.Position;
         }
+
+        public void SubscribeWorld(World world) => this.world = world;
 
         public void SubscribeHeightMap(Func<float, float, float> HeightMap) => this.HeightMap = HeightMap;
     }
