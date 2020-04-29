@@ -12,12 +12,11 @@ namespace SilkyEngine.Sources.Graphics
     {
         protected GL gl;
         uint id;
-        private Dictionary<string, int> uniformLocations;
+        private Dictionary<string, int> uniformLocations = new Dictionary<string, int>();
 
         protected ShaderProgram(GL gl, string name)
         {
             this.gl = gl;
-            uniformLocations = new Dictionary<string, int>();
             id = CreateProgram(name);
         }
 
@@ -54,7 +53,7 @@ namespace SilkyEngine.Sources.Graphics
         protected void SetUniform(string name, LightStruct light)
         {
             SetUniform(name + ".position", light.position);
-            
+
             SetUniform(name + ".diffuse", light.diffuse);
             SetUniform(name + ".ambient", light.ambient);
             SetUniform(name + ".specular", light.specular);
@@ -100,7 +99,7 @@ namespace SilkyEngine.Sources.Graphics
         {
             uint shader = gl.CreateShader(type);
             bool isVertexShader = (type == ShaderType.VertexShader);
-            string shaderSource = File.ReadAllText("Resources/Shaders/" + name + (isVertexShader ? ".vs" : ".fs"));
+            string shaderSource = File.ReadAllText("Resources/Shaders/" + name + (isVertexShader ? ".vert" : ".frag"));
             gl.ShaderSource(shader, shaderSource);
             gl.CompileShader(shader);
             string infoLog = gl.GetShaderInfoLog(shader);

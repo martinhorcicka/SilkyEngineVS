@@ -47,11 +47,13 @@ namespace SilkyEngine.Sources
 
         private void OnLoad()
         {
+            Func<float, float> sin = MathF.Sin, cos = MathF.Cos;
             Func<float, float, float> CustomHeightMap = (x, y) =>
             {
                 x /= 10; y /= 10;
-                float f = x * MathF.Exp(-(x * x + y * y));
-                return 10 * f;
+                float f = sin(cos(x+2)) * sin(cos(y));
+                 //float f = x * MathF.Exp(-(x * x + y * y));
+                 return 5 * f;
             };
 
             var input = window.CreateInput();
@@ -66,15 +68,16 @@ namespace SilkyEngine.Sources
 
             basicShader = loader.LoadShader("basic");
             terrainShader = loader.LoadShader("basicTerrain");
-            terrainShader.SubscribeUniform("texScale", 1f);
+            terrainShader.SubscribeUniform("texScale", 5f);
             lightShader = loader.LoadShader("simpleLight");
 
             // freeCam = new FreeCameraControls(window);
             thirdPerson = new ThirdPersonControls(window);
 
             heightMap = new HeightMap("ltm_heightmap.png", new RectangleF(-100, -100, 200, 200), 0, 20);
+            Func<float, float, float> tmpGetHeight = CustomHeightMap;
 
-            Func<float, float, float, Vector3> newPosition = (x, y, z) => new Vector3(x, y + heightMap.GetHeight(x, z), z);
+            Func<float, float, float, Vector3> newPosition = (x, y, z) => new Vector3(x, y + tmpGetHeight(x, z), z);
             player = new Player((IPlayerController)thirdPerson, loader.FromOBJ("capsule", "red", "jpg"), newPosition(0, 0, 0), Vector3.Zero, 1f);
             var rotation = new BRotateAroundY(window, 2);
             var counterRotation = new BRotateAroundY(window, -5);
@@ -87,38 +90,38 @@ namespace SilkyEngine.Sources
                 new Entity(counterRotation,loader.FromOBJ("icosahedron", "yellow", "jpg"), newPosition(0.5f,0.5f,-3.5f), Vector3.Zero, 0.5f),
             };
 
-            ((ThirdPersonControls)thirdPerson).SubscribeHeightMap(heightMap.GetHeight);
+            ((ThirdPersonControls)thirdPerson).SubscribeHeightMap(tmpGetHeight);
 
             renderer = new Renderer(gl, window, (ICameraController)thirdPerson, new Vector3(0, 3, -15), player);
             renderer.SubscribeRenderables(basicEntities, basicShader);
-            renderer.SubscribeRenderables(Generator.HeightMapTerrain(loader, "ltm_heightmap", "png", heightMap.GetHeight), terrainShader);
+            renderer.SubscribeRenderables(Generator.HeightMapTerrain(loader, "green", "jpg", tmpGetHeight), terrainShader);
 
             LightStruct light = new LightStruct(
                 name: "light",
-                position: newPosition(2, 100, 2),
-                ambient: new Vector3(0.2f, 0.2f, 0.2f),
+                position: newPosition(2, 200, 2),
+                ambient: new Vector3(0.2f),
                 diffuse: new Vector3(0.9f, 0.9f, 0.9f),
                 specular: new Vector3(1.0f, 1.0f, 1.0f),
-                constant: 1.0f, linear: 0.0f, quadratic: 0.0f
+                constant: 1.0f, linear: 0.0014f, quadratic: 0.000007f
             );
             LightStruct light2 = new LightStruct(
                 name: "light2",
                 position: newPosition(-4, 1.5f, -5),
-                ambient: new Vector3(0.2f, 0.2f, 0.2f),
+                ambient: new Vector3(0.2f),
                 diffuse: new Vector3(0.9f, 0.9f, 0.9f),
                 specular: new Vector3(1.0f, 1.0f, 1.0f),
-                constant: 1.0f, linear: 0.07f, quadratic: 0.017f
+                constant: 1.0f, linear: 0.35f, quadratic: 0.44f
             );
             LightStruct light3 = new LightStruct(
                 name: "light3",
                 position: newPosition(-10, 3.5f, 0),
-                ambient: new Vector3(0.2f, 0.2f, 0.2f),
+                ambient: new Vector3(0.2f),
                 diffuse: new Vector3(0.9f, 0.9f, 0.9f),
                 specular: new Vector3(1.0f, 1.0f, 1.0f),
-                constant: 1.0f, linear: 0.07f, quadratic: 0.0017f
+                constant: 1.0f, linear: 0.35f, quadratic: 0.44f
             );
 
-            var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, heightMap.GetHeight);
+            var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, tmpGetHeight);
             var lightModel = loader.FromOBJ("sphere", "white", "jpg");
             testLight = new LightEntity(rotateArounOrigin, light3, lightModel, 0.15f);
             var lightEntities = new List<LightEntity>()

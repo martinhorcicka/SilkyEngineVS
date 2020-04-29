@@ -9,16 +9,15 @@ out vec2 fTexCoords;
 out vec3 fNormal;
 
 uniform mat4 model;
+uniform mat4 itModel;
 uniform mat4 view;
 uniform mat4 proj;
-
-uniform float texScale;
 
 void main() {
     fPosition = vec3(model * vec4(aPosition, 1.0));
     gl_Position = proj * view * vec4(fPosition, 1);
 
-    fTexCoords = aTexCoords * texScale;
+    fTexCoords = aTexCoords;
 
-    fNormal = mat3(transpose(inverse(model))) * aNormal;
+    fNormal = mat3(itModel) * aNormal;
 }

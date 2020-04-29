@@ -8,11 +8,10 @@ namespace SilkyEngine.Sources.Behaviors
     public abstract class Behavior
     {
         public static Behavior DoNothing = null;
-        protected List<Entity> entities;
+        protected List<Entity> entities = new List<Entity>();
         public Behavior(IWindow window)
         {
             window.Update += OnUpdate;
-            entities = new List<Entity>();
         }
 
         public virtual void SubscribeEntity(Entity entity)

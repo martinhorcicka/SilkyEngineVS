@@ -1,18 +1,16 @@
 using System;
 using System.Numerics;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Tools;
 
 namespace SilkyEngine.Sources.Graphics
 {
     public class Camera
     {
-        private static float degToRad(float deg) => deg * MathF.PI / 180f;
-        private static float radToDeg(float rad) => rad / MathF.PI * 180f;
         private static Func<float, float> sin = MathF.Sin, cos = MathF.Cos;
-        private static float angleBetweenVectors(Vector3 v, Vector3 w) => MathF.Acos(Vector3.Dot(v, w) / (v.Length() * w.Length()));
-        private static float MAX_PITCH { get; } = degToRad(89f);
+        private static float MAX_PITCH { get; } = Computation.DegToRad(89f);
         private Vector3 position, front, right, up = Vector3.UnitY;
-        private float pitch, yaw, distance;
+        private float pitch, yaw;
 
         public void SetHeight(float newHeight) => position.Y = newHeight;
         public Vector3 Position => position;
@@ -25,7 +23,6 @@ namespace SilkyEngine.Sources.Graphics
             controls.SubscribeCamera(this);
             this.position = position;
             var tmp = target - position;
-            distance = tmp.Length();
             this.front = Vector3.Normalize(tmp);
             right = Vector3.Normalize(Vector3.Cross(front, up));
 
@@ -52,11 +49,11 @@ namespace SilkyEngine.Sources.Graphics
         {
             Vector3 frontInXZ = front;
             frontInXZ.Y = 0;
-            yaw = angleBetweenVectors(Vector3.UnitX, frontInXZ);
-            if (MathF.Abs(yaw - MathF.PI) > degToRad(1f))
+            yaw = Computation.AngleBetweenVectors(Vector3.UnitX, frontInXZ);
+            if (MathF.Abs(yaw - MathF.PI) > Computation.DegToRad(1f))
                 yaw *= MathF.Sign(Vector3.Dot(Vector3.UnitZ, frontInXZ));
 
-            pitch = angleBetweenVectors(front, frontInXZ);
+            pitch = Computation.AngleBetweenVectors(front, frontInXZ);
             pitch *= MathF.Sign(Vector3.Dot(front, up));
         }
 

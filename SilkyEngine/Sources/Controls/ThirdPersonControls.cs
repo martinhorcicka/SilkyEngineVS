@@ -13,7 +13,6 @@ namespace SilkyEngine.Sources.Controls
 {
     public class ThirdPersonControls : Controller, IPlayerController, ICameraController
     {
-        private static float angleBetweenVectors(Vector3 v, Vector3 w) => MathF.Acos(Vector3.Dot(v, w) / (v.Length() * w.Length()));
         private Camera camera;
         private Player player;
         private Func<float, float, float> HeightMap;
@@ -63,7 +62,6 @@ namespace SilkyEngine.Sources.Controls
                 if (camera.ChangePitch(-pitchChange)) pitchChange = 0;
 
                 float cy = MathF.Cos(yawChange), sy = MathF.Sin(yawChange);
-                float cp = MathF.Cos(pitchChange), sp = MathF.Cos(pitchChange);
 
                 distance = Vector3.Distance(player.Focus, camera.Position);
                 Vector3 R = Vector3.Normalize(camera.Position - player.Focus);

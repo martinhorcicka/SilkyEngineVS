@@ -23,10 +23,9 @@ namespace SilkyEngine.Sources.Tools
         public static List<Entity> HeightMapTerrain(Loader loader, string texName, string format, Func<float, float, float> HeightMap)
         {
             Func<Point, Point> inX = p => { ++p.X; return p; }, inY = p => { ++p.Y; return p; };
-            int N = 1;
-            int stepSize = 200;
-            // Point p = new Point(-N / 2 * stepSize, -N / 2 * stepSize);
-            Point p = new Point(-100, -100);
+            int N = 4;
+            int stepSize = 20;
+            Point p = new Point(-N * stepSize / 2, -N * stepSize / 2);
             Size s = new Size(stepSize, stepSize);
             float density = 1f;
 

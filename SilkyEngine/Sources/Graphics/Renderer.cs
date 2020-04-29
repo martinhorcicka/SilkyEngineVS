@@ -6,6 +6,7 @@ using Silk.NET.OpenGL;
 using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Tools;
 
 namespace SilkyEngine.Sources.Graphics
 {
@@ -14,22 +15,19 @@ namespace SilkyEngine.Sources.Graphics
         private GL gl;
         private IWindow window;
         private Camera camera;
-        private List<LightEntity> lights;
-        private Dictionary<Shader, Dictionary<TexturedModel, List<Entity>>> renderables;
+        private List<LightEntity> lights = new List<LightEntity>();
+        private Dictionary<Shader, Dictionary<TexturedModel, List<Entity>>> renderables = new Dictionary<Shader, Dictionary<TexturedModel, List<Entity>>>();
         private Matrix4x4 projectionMatrix;
         public Renderer(GL gl, IWindow window, ICameraController controls, Vector3 cameraPos, Player player)
         {
             this.gl = gl;
             this.window = window;
             camera = new Camera(controls, cameraPos, player.Focus);
-            renderables = new Dictionary<Shader, Dictionary<TexturedModel, List<Entity>>>();
-            lights = new List<LightEntity>();
 
             window.Resize += OnResize;
         }
 
-        private void MakeProjection() => projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(degToRad(45), (float)window.Size.Width / window.Size.Height, 0.5f, 200f);
-        private float degToRad(float deg) => deg * MathF.PI / 180f;
+        private void MakeProjection() => projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(Computation.DegToRad(45), (float)window.Size.Width / window.Size.Height, 0.5f, 200f);
         public void Prepare()
         {
             gl.Enable(EnableCap.DepthTest);
@@ -66,6 +64,7 @@ namespace SilkyEngine.Sources.Graphics
                 });
                 UpdateLights();
                 shader.SubscribeUniform("model", Matrix4x4.Identity);
+                shader.SubscribeUniform("itModel", Matrix4x4.Identity);
                 shader.SubscribeUniform("view", Matrix4x4.Identity);
                 shader.SubscribeUniform("proj", Matrix4x4.Identity);
                 shader.SubscribeUniform("viewPos", Vector3.One);

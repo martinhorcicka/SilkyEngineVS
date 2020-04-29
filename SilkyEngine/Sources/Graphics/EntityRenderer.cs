@@ -8,7 +8,11 @@ namespace SilkyEngine.Sources.Graphics
     {
         public static void Draw(GL gl, Entity entity, Shader shader)
         {
-            shader.UpdateUniform("model", MakeModelMatrix(entity));
+            var modelMatrix = MakeModelMatrix(entity);
+            shader.UpdateUniform("model", modelMatrix);
+            Matrix4x4.Invert(modelMatrix, out modelMatrix);
+            modelMatrix = Matrix4x4.Transpose(modelMatrix);
+            shader.UpdateUniform("itModel", modelMatrix);
             gl.DrawArrays(GLEnum.Triangles, 0, entity.TexturedModel.VertCount);
         }
 

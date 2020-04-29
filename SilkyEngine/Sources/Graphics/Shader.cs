@@ -8,10 +8,10 @@ namespace SilkyEngine.Sources.Graphics
 {
     public class Shader : ShaderProgram
     {
-        private Dictionary<string, ShaderUniform> uniforms;
+        private Dictionary<string, ShaderUniform> uniforms = new Dictionary<string, ShaderUniform>();
+
         public Shader(GL gl, string name) : base(gl, name)
         {
-            uniforms = new Dictionary<string, ShaderUniform>();
             SetUniform("colorTexture", 0);
         }
 
@@ -52,12 +52,5 @@ namespace SilkyEngine.Sources.Graphics
             if (data is LightStruct)
                 SetUniform(name, (LightStruct)data);
         }
-
-        // public void SetUniforms()
-        // {
-        //     Bind();
-        //     foreach (var u in uniforms)
-        //         SetUniform(u.Key, u.Value);
-        // }
     }
 }

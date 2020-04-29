@@ -10,18 +10,15 @@ namespace SilkyEngine.Sources.Graphics
 {
     public class Loader : IDisposable
     {
-        private Dictionary<string, RawModel> rawModels;
-        private Dictionary<string, Texture> textures;
-        private Dictionary<string, Shader> shaders;
-        private List<uint> vbos;
+        private Dictionary<string, RawModel> rawModels = new Dictionary<string, RawModel>();
+        private Dictionary<string, Texture> textures = new Dictionary<string, Texture>();
+        private Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
+        private List<uint> vbos = new List<uint>();
+
         private GL gl;
 
         public Loader(GL gl)
         {
-            rawModels = new Dictionary<string, RawModel>();
-            textures = new Dictionary<string, Texture>();
-            shaders = new Dictionary<string, Shader>();
-            vbos = new List<uint>();
             this.gl = gl;
         }
 

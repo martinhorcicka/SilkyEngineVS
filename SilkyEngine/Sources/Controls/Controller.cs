@@ -18,29 +18,24 @@ namespace SilkyEngine.Sources.Controls
 {
     public abstract class Controller : Behavior
     {
-        private IWindow window;
         protected const float MAX_PITCH = 89f * MathF.PI / 180f;
-        protected static Dictionary<Key, bool> isPressed;
         protected static Key[] controlKeys = new Key[] { Key.W, Key.A, Key.S, Key.D, Key.Space, Key.ShiftLeft };
-        protected static Dictionary<MouseButton, bool> isMBPressed;
         protected static MouseButton[] mouseButtons = new MouseButton[] { MouseButton.Left, MouseButton.Right };
+        protected static Dictionary<Key, bool> isPressed = new Dictionary<Key, bool>(controlKeys.Length);
+        protected static Dictionary<MouseButton, bool> isMBPressed = new Dictionary<MouseButton, bool>(mouseButtons.Length);
         protected float movementSpeed, mouseSensitivity;
-
 
         public Controller(IWindow window, float movementSpeed = 10f, float mouseSensitivity = 0.002f) : base(window)
         {
-            this.window = window;
-            isMBPressed = new Dictionary<MouseButton, bool>(mouseButtons.Length);
             foreach (var mb in mouseButtons)
                 isMBPressed.Add(mb, false);
 
-            isPressed = new Dictionary<Key, bool>(controlKeys.Length);
             foreach (var k in controlKeys)
                 isPressed.Add(k, false);
 
             var input = window.CreateInput();
             var mouse = input.Mice[0];
-            CreateCursor("res/textures/arrow.png", mouse.Cursor);
+            CreateCursor("Resources/Textures/arrow.png", mouse.Cursor);
             mouse.MouseMove += OnMouseMove;
             mouse.MouseDown += OnMouseDown;
             mouse.MouseUp += OnMouseUp;
