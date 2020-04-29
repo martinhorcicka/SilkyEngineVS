@@ -51,9 +51,9 @@ namespace SilkyEngine.Sources
             Func<float, float, float> CustomHeightMap = (x, y) =>
             {
                 x /= 10; y /= 10;
-                float f = sin(cos(x+2)) * sin(cos(y));
-                 //float f = x * MathF.Exp(-(x * x + y * y));
-                 return 5 * f;
+                x -= 4;
+                float f = sin(cos(x)) * sin(cos(y));
+                return 4*f;
             };
 
             var input = window.CreateInput();

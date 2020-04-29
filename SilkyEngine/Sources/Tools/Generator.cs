@@ -49,7 +49,6 @@ namespace SilkyEngine.Sources.Tools
         }
         private static Vertex[] HeightMapTerrainVertices(Rectangle area, float density, Func<float, float, float> HeightMap)
         {
-            float scale = 1 / density;
             int numX = (int)(density * area.Width);
             int numZ = (int)(density * area.Height);
 
@@ -61,8 +60,8 @@ namespace SilkyEngine.Sources.Tools
             {
                 for (int i = 0; i <= numX; i++)
                 {
-                    Vector3 pos = new Vector3(i, 0, j) * scale;
-                    float spacing = scale * area.Width / numX;
+                    float spacing = 1 / density;
+                    Vector3 pos = new Vector3(i, 0, j) * spacing;
                     float x = spacing * i + area.Left;
                     float z = spacing * j + area.Top;
                     pos.Y = HeightMap(x, z);
