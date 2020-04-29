@@ -7,6 +7,7 @@ namespace SilkyEngine.Sources.Tools
 {
     public static class Computation
     {
+        public static Vector2 RandomVector2(Random generator) => Vector2.Normalize(new Vector2((float)generator.NextDouble() - 0.5f, (float)generator.NextDouble() - 0.5f));
         public static Func<float, float, float> BumpFunction = (x, y) => (x * x + y * y < 1) ? MathF.Exp(-1 / (1 - x * x - y * y)) : 0;
         private static float mollifierNormalizationConstant = Integrate2D(BumpFunction);
         public static Func<float, float, float> Mollifier = (x, y) => BumpFunction(x, y) / mollifierNormalizationConstant;

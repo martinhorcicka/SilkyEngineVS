@@ -25,8 +25,10 @@ namespace SilkyEngine.Sources.Behaviors
         {
             foreach (var e in entities)
             {
+                var prevHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
                 RotateEntity(e, speed * (float)deltaTime);
-                e.SetHeight(2 + heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0);
+                var currentHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
+                e.SetHeight(e.Position.Y + currentHeight - prevHeight);
             }
         }
 

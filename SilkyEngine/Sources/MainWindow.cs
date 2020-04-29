@@ -122,13 +122,14 @@ namespace SilkyEngine.Sources
             );
 
             var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, tmpGetHeight);
+            var randomWalking = new BRandomWalk(window, 2, 4, tmpGetHeight);
             var lightModel = loader.FromOBJ("sphere", "white", "jpg");
             testLight = new LightEntity(rotateArounOrigin, light3, lightModel, 0.15f);
             var lightEntities = new List<LightEntity>()
             {
                 testLight,
                 new LightEntity(Behavior.DoNothing, light, lightModel, 10f),
-                new LightEntity(Behavior.DoNothing, light2, lightModel, 0.2f),
+                new LightEntity(randomWalking, light2, lightModel, 0.2f),
             };
 
             renderer.SubscribeRenderables(lightEntities, lightShader);
