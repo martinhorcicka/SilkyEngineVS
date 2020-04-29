@@ -78,7 +78,7 @@ namespace SilkyEngine.Sources
             Func<float, float, float> tmpGetHeight = heightMap.GetHeight;
 
             Func<float, float, float, Vector3> newPosition = (x, y, z) => new Vector3(x, y + tmpGetHeight(x, z), z);
-            player = new Player((IPlayerController)thirdPerson, loader.FromOBJ("capsule", "red", "jpg"), newPosition(0, 0, 0), Vector3.Zero, 1f);
+            player = new Player((IPlayerController)thirdPerson, loader.FromOBJ("capsule", "blue", "jpg"), newPosition(0, 0, 0), Vector3.Zero, 1f);
             var rotation = new BRotateAroundY(window, 2);
             var counterRotation = new BRotateAroundY(window, -5);
 
@@ -94,7 +94,7 @@ namespace SilkyEngine.Sources
 
             renderer = new Renderer(gl, window, (ICameraController)thirdPerson, new Vector3(0, 3, -15), player);
             renderer.SubscribeRenderables(basicEntities, basicShader);
-            renderer.SubscribeRenderables(Generator.HeightMapTerrain(loader, "grass", "png", 5, tmpGetHeight), terrainShader);
+            renderer.SubscribeRenderables(Generator.HeightMapTerrain(loader, "grass", "png", 2, tmpGetHeight), terrainShader);
 
             LightStruct light = new LightStruct(
                 name: "light",
