@@ -24,7 +24,8 @@ namespace SilkyEngine.Sources.Controls
         private Vector2 prevMousePos;
         private float distance, verticalSpeed;
         private const float gravity = 10f;
-        private bool inAir;
+        private bool isInAir;
+        private bool playerCollided;
 
 
         public ThirdPersonControls(IWindow window) : base(window)
@@ -32,7 +33,7 @@ namespace SilkyEngine.Sources.Controls
             window.CreateInput().Mice[0].Cursor.CursorMode = CursorMode.Normal;
             verticalSpeed = 0;
             distance = Computation.Average(MIN_DISTANCE, MAX_DISTANCE);
-            inAir = true;
+            isInAir = true;
         }
 
         protected override void OnMouseDown(IMouse mouse, MouseButton button)
@@ -88,6 +89,7 @@ namespace SilkyEngine.Sources.Controls
 
         protected override void OnUpdate(double deltaTime)
         {
+            if (!playerCollided) isInAir = true;
             float speed = movementSpeed * (float)deltaTime;
 
             Vector3 dPos = Vector3.Zero;
@@ -102,24 +104,26 @@ namespace SilkyEngine.Sources.Controls
 
             if (world.IsWalkable(player.Position + dPos))
             {
-                player.Translate(dPos * speed);
-                camera.Translate(dPos * speed);
+                Translate(dPos * speed);
             }
 
-            verticalSpeed -= gravity * (float)deltaTime;
-            player.Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
-            camera.Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
+            if (isInAir)
+            {
+                verticalSpeed -= gravity * (float)deltaTime;
+                Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
+            }
 
             float terraintHeight = HeightMap?.Invoke(player.Position.X, player.Position.Z) ?? 0f;
             if (player.Position.Y < terraintHeight)
             {
+                isInAir = false;
                 verticalSpeed = 0;
                 float dHeight = camera.Position.Y - player.Position.Y;
                 player.SetHeight(terraintHeight);
                 camera.SetHeight(terraintHeight + dHeight);
             }
-            if (MathF.Abs(verticalSpeed) < 0.1f)
-                inAir = false;
+
+            playerCollided = false;
         }
 
         protected override void OnKeyDown(IKeyboard keyboard, Key key, int mode)
@@ -128,7 +132,7 @@ namespace SilkyEngine.Sources.Controls
             switch (key)
             {
                 case Key.Space:
-                    if (!inAir) Jump();
+                    if (!isInAir) Jump();
                     break;
                 default:
                     break;
@@ -146,19 +150,18 @@ namespace SilkyEngine.Sources.Controls
         {
             if (eventArgs.Unwrap(out Player p, out Entity e))
             {
-                float speed = movementSpeed * (float)eventArgs.DeltaTime;
-
-                Vector3 R = Vector3.Normalize(p.Position - e.Position);
+                playerCollided = true;
+                float distance = movementSpeed * (float)eventArgs.DeltaTime;
+                Vector3 R = Vector3.Normalize(p.Center - e.Center);
                 R = ToBoxNormal(R);
-                if (R == Vector3.UnitY)
+                if (R.Y == 1)
                 {
-                    verticalSpeed += gravity * (float)eventArgs.DeltaTime;
-                    player.Translate(Vector3.UnitY * verticalSpeed * (float)eventArgs.DeltaTime);
-                    camera.Translate(Vector3.UnitY * verticalSpeed * (float)eventArgs.DeltaTime);
+                    verticalSpeed = 0;
+                    isInAir = false;
+                    R.Y = 0;
                 }
 
-                p.Translate(R * speed);
-                camera.Translate(R * speed);
+                Translate(R * distance * 2.1f, p);
             }
         }
 
@@ -186,8 +189,16 @@ namespace SilkyEngine.Sources.Controls
 
         private void Jump()
         {
-            inAir = true;
+            isInAir = true;
             verticalSpeed = player.JumpPower;
+            Translate(0.1f * Vector3.UnitY);
+        }
+
+        private void Translate(Vector3 dp, Player p = null)
+        {
+            p ??= player;
+            p.Translate(dp);
+            camera.Translate(dp);
         }
 
         public void SubscribePlayer(Player player) => this.player = player;

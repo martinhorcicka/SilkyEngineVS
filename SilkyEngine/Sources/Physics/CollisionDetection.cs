@@ -14,12 +14,12 @@ namespace SilkyEngine.Sources.Physics
 
         public static void CheckForCollisions(double deltaTime)
         {
-            foreach (var b1 in boxes)
+            for (int i = 0; i < boxes.Count; i++)
             {
-                foreach (var b2 in boxes)
+                for (int j = i + 1; j < boxes.Count; j++)
                 {
-                    if (b1.Item1 == b2.Item1) continue;
-
+                    var b1 = boxes[i];
+                    var b2 = boxes[j];
                     if (IsColliding(b1.Item2, b2.Item2))
                         Collision?.Invoke(new CollisionEventArgs(b1.Item1, b2.Item1, deltaTime));
                 }

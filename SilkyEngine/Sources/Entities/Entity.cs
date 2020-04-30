@@ -26,7 +26,7 @@ namespace SilkyEngine.Sources.Entities
         }
 
         public TexturedModel TexturedModel => texturedModel;
-        public Vector3 Center => texturedModel.Center + position;
+        public Vector3 Center => texturedModel.Center * scale + position;
         public void SetHeight(float newHeight)
         {
             boundingBox.SetHeight(newHeight + texturedModel.Center.Y);

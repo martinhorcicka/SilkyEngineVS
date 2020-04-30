@@ -39,13 +39,13 @@ namespace SilkyEngine.Sources
             walkableArea = new RectangleF(-100, -100, 200, 200);
 
             heightMap = new HeightMap("ltm_heightmap.png", walkableArea, 0, 20);
-            newPosition = (x, y, z) => new Vector3(x, y + heightMap.GetHeight(x, z), z);
+            newPosition = (x, y, z) => new Vector3(x, y + GetHeight(x, z), z);
 
             var rotation = new BRotateAroundY(window, 2);
             var counterRotation = new BRotateAroundY(window, -5);
-            var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, heightMap.GetHeight);
-            var randomWalkLight = new BRandomWalk(window, 2, 4, heightMap.GetHeight);
-            var randomWalkCube = new BRandomWalk(window, 2, 2, heightMap.GetHeight);
+            var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, GetHeight);
+            var randomWalkLight = new BRandomWalk(window, 2, 4, GetHeight);
+            var randomWalkCube = new BRandomWalk(window, 2, 2, GetHeight);
             CreateTerrain(loader);
             CreateObstacles(loader, rotation, counterRotation, randomWalkCube);
             CreateLights(loader, rotateArounOrigin, randomWalkLight);
@@ -70,7 +70,7 @@ namespace SilkyEngine.Sources
 
         private void CreateTerrain(Loader loader)
         {
-            terrain = Generator.HeightMapTerrain(loader, "grass", "png", 1f, heightMap.GetHeight);
+            terrain = Generator.HeightMapTerrain(loader, "grass", "png", 1f, GetHeight);
         }
 
         private void CreateObstacles(Loader loader, params Behavior[] behaviors)
@@ -78,7 +78,8 @@ namespace SilkyEngine.Sources
             obstacles = new List<Entity>()
             {
                 new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.0f,0.5f), Vector3.Zero, 1),
-                //new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.0f,3.5f), Vector3.Zero, 5f),
+                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(9.5f,0.0f,-6f), Vector3.Zero, 2f),
+                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(7.5f,0.0f,9.5f), Vector3.Zero, 3f),
                 new Entity(BoundingBox.Default, behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"), newPosition(0.5f,0.0f,3.5f), Vector3.Zero, 1f),
                 new Entity(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"), newPosition(0.5f,0.0f,-3.5f), Vector3.Zero, 1f),
             };
