@@ -10,8 +10,8 @@ namespace SilkyEngine.Sources.Entities
     public class Player : Entity
     {
         private Vector3 focus;
-        public Player(BoundingBox boundingBox, IPlayerController controls, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
-            : base(boundingBox, (Behavior)controls, texturedModel, position, rotation, scale)
+        public Player(BoundingBox boundingBox, IPlayerController controls, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
+            : base(boundingBox, (Behavior)controls, texturedModel, position, rotation, scale, dimensions)
         {
             controls.SubscribePlayer(this);
             focus = 0.25f * Vector3.UnitY;

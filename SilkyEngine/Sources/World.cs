@@ -65,7 +65,8 @@ namespace SilkyEngine.Sources
 
         public void MakePlayer(Loader loader, string OBJModel, string texName, string texFormat, IPlayerController controller)
         {
-            player = new Player(BoundingBox.Default, controller, loader.FromOBJ(OBJModel, texName, texFormat), newPosition(0, 0, 0), Vector3.Zero, 1f);
+            player = new Player(BoundingBox.Default, controller, loader.FromOBJ(OBJModel, texName, texFormat),
+                newPosition(0, 0, 0), Vector3.Zero, 1f, 0.5f * new Vector3(1, 2, 1));
         }
 
         private void CreateTerrain(Loader loader)
@@ -77,11 +78,23 @@ namespace SilkyEngine.Sources
         {
             obstacles = new List<Entity>()
             {
-                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.0f,0.5f), Vector3.Zero, 1),
-                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(9.5f,0.0f,-6f), Vector3.Zero, 2f),
-                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(7.5f,0.0f,9.5f), Vector3.Zero, 3f),
-                new Entity(BoundingBox.Default, behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"), newPosition(0.5f,0.0f,3.5f), Vector3.Zero, 1f),
-                new Entity(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"), newPosition(0.5f,0.0f,-3.5f), Vector3.Zero, 1f),
+                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                    newPosition( 3.5f, 0.0f, 0.5f), Vector3.Zero, 1),
+
+                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                    newPosition( 3.5f, 4.5f, 0.5f), Vector3.Zero, 1),
+
+                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                    newPosition( 9.5f, 0.0f,-6.0f), Vector3.Zero, 2),
+
+                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                    newPosition( 7.5f, 0.0f, 9.5f), Vector3.Zero, 3),
+
+                new Entity(BoundingBox.Default, behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
+                    newPosition(-3.5f, 0.0f, 6.5f), Vector3.Zero, 1, new Vector3(1,0.5f,1)),
+
+                new Entity(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
+                    newPosition(-8.5f, 0.0f,-3.5f), Vector3.Zero, 1),
             };
         }
 

@@ -67,7 +67,7 @@ namespace SilkyEngine.Sources
             CollisionDetection.Collision += controls.OnCollision;
             controls.SubscribeHeightMap(world.GetHeight);
             controls.SubscribeWorld(world);
-            world.MakePlayer(loader, "cube", "Colors/blue", "jpg", controls);
+            world.MakePlayer(loader, "capsule", "Colors/blue", "jpg", controls);
             renderer = new Renderer(gl, window, controls);
 
             basicShader = loader.LoadShader("basic");

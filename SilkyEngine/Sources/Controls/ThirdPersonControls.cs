@@ -90,7 +90,7 @@ namespace SilkyEngine.Sources.Controls
         protected override void OnUpdate(double deltaTime)
         {
             if (!playerCollided) isInAir = true;
-            float speed = movementSpeed * (float)deltaTime;
+            float distance = movementSpeed * (float)deltaTime;
 
             Vector3 dPos = Vector3.Zero;
             if (isPressed[Key.W])
@@ -101,10 +101,11 @@ namespace SilkyEngine.Sources.Controls
                 dPos -= player.Right;
             if (isPressed[Key.D])
                 dPos += player.Right;
+            dPos = Vector3.Normalize(dPos);
 
             if (world.IsWalkable(player.Position + dPos))
             {
-                Translate(dPos * speed);
+                Translate(dPos * distance);
             }
 
             if (isInAir)
@@ -153,22 +154,28 @@ namespace SilkyEngine.Sources.Controls
                 playerCollided = true;
                 float distance = movementSpeed * (float)eventArgs.DeltaTime;
                 Vector3 R = Vector3.Normalize(p.Center - e.Center);
-                R = ToBoxNormal(R);
+                R = ToBoxNormal(R, p.Dimensions);
                 if (R.Y == 1)
                 {
                     verticalSpeed = 0;
                     isInAir = false;
                     R.Y = 0;
                 }
+                if (R.Y == -1)
+                {
+                    verticalSpeed = 0;
+                }
 
-                Translate(R * distance * 2.1f, p);
+
+                Translate(R * distance, p);
             }
         }
 
-        private Vector3 ToBoxNormal(Vector3 vec)
+        private Vector3 ToBoxNormal(Vector3 inputVec, Vector3 dimensions)
         {
             Func<float, float> abs = MathF.Abs;
             Func<float, int> sgn = MathF.Sign;
+            Vector3 vec = inputVec / dimensions;
             int indexMax = 0;
             if (abs(vec.X) < abs(vec.Y))
             {
