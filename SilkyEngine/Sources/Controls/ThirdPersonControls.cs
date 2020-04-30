@@ -114,11 +114,12 @@ namespace SilkyEngine.Sources.Controls
             if (player.Position.Y < terraintHeight)
             {
                 verticalSpeed = 0;
-                inAir = false;
                 float dHeight = camera.Position.Y - player.Position.Y;
                 player.SetHeight(terraintHeight);
                 camera.SetHeight(terraintHeight + dHeight);
             }
+            if (MathF.Abs(verticalSpeed) < 0.1f)
+                inAir = false;
         }
 
         protected override void OnKeyDown(IKeyboard keyboard, Key key, int mode)
@@ -150,7 +151,11 @@ namespace SilkyEngine.Sources.Controls
                 Vector3 R = Vector3.Normalize(p.Position - e.Position);
                 R = ToBoxNormal(R);
                 if (R == Vector3.UnitY)
+                {
                     verticalSpeed += gravity * (float)eventArgs.DeltaTime;
+                    player.Translate(Vector3.UnitY * verticalSpeed * (float)eventArgs.DeltaTime);
+                    camera.Translate(Vector3.UnitY * verticalSpeed * (float)eventArgs.DeltaTime);
+                }
 
                 p.Translate(R * speed);
                 camera.Translate(R * speed);
