@@ -154,7 +154,7 @@ namespace SilkyEngine.Sources.Controls
                 playerCollided = true;
                 float distance = movementSpeed * (float)eventArgs.DeltaTime;
                 Vector3 R = Vector3.Normalize(p.Center - e.Center);
-                R = ToBoxNormal(R, p.Dimensions);
+                R = ToBoxNormal(R, p.Dimensions, e.Dimensions);
                 if (R.Y == 1)
                 {
                     verticalSpeed = 0;
@@ -171,11 +171,11 @@ namespace SilkyEngine.Sources.Controls
             }
         }
 
-        private Vector3 ToBoxNormal(Vector3 inputVec, Vector3 dimensions)
+        private Vector3 ToBoxNormal(Vector3 inputVec, params Vector3[] dimensions)
         {
             Func<float, float> abs = MathF.Abs;
             Func<float, int> sgn = MathF.Sign;
-            Vector3 vec = inputVec / dimensions;
+            Vector3 vec = inputVec / dimensions[0] / dimensions[1];
             int indexMax = 0;
             if (abs(vec.X) < abs(vec.Y))
             {

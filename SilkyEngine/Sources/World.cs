@@ -45,9 +45,10 @@ namespace SilkyEngine.Sources
             var counterRotation = new BRotateAroundY(window, -5);
             var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, GetHeight);
             var randomWalkLight = new BRandomWalk(window, 2, 4, GetHeight);
-            var randomWalkCube = new BRandomWalk(window, 2, 2, GetHeight);
+
+            var walkBackAndForth = new BWalkBackAndForth(window, 2, 4 * Vector3.UnitX);
             CreateTerrain(loader);
-            CreateObstacles(loader, rotation, counterRotation, randomWalkCube);
+            CreateObstacles(loader, rotation, counterRotation, walkBackAndForth);
             CreateLights(loader, rotateArounOrigin, randomWalkLight);
 
         }
@@ -95,7 +96,10 @@ namespace SilkyEngine.Sources
 
                 new Entity(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
                     newPosition(-8.5f, 0.0f,-3.5f), Vector3.Zero, 1),
-            };
+
+                new Entity(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "wood", "jpg"),
+                    newPosition(7,8,2), Vector3.Zero, 1, new Vector3(1,0.25f,2)),
+        };
         }
 
         private void CreateLights(Loader loader, params Behavior[] behaviors)
