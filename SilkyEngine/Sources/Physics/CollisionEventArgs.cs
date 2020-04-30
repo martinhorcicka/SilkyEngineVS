@@ -5,40 +5,38 @@ namespace SilkyEngine.Sources.Physics
 {
     public class CollisionEventArgs
     {
-        private Tuple<Entity, BoundingBox> box1, box2;
+        private Entity entity1, entity2;
         public double DeltaTime { get; }
 
-        public CollisionEventArgs(Tuple<Entity, BoundingBox> box1, Tuple<Entity, BoundingBox> box2, double deltaTime)
+        public CollisionEventArgs(Entity e1, Entity e2, double deltaTime)
         {
-            this.box1 = box1;
-            this.box2 = box2;
+            this.entity1 = e1;
+            this.entity2 = e2;
             DeltaTime = deltaTime;
         }
 
         private bool isPlayer()
         {
-            return (box1.Item1 is Player || box2.Item1 is Player);
+            return (entity1 is Player || entity2 is Player);
         }
 
-        public Player GetPlayer()
+        public bool Unwrap(out Player p, out Entity e)
         {
-            if (!isPlayer()) return null;
+            p = null; e = null;
+            if (!isPlayer()) return false;
 
-            if (box1.Item1 is Player) return (Player)box1.Item1;
-
-            return (Player)box2.Item1;
-        }
-
-        public Tuple<Player, Entity> Unwrap()
-        {
-            var p = GetPlayer();
-            Entity e;
-            if (box1.Item1 == p)
-                e = box2.Item1;
+            if (entity1 is Player)
+            {
+                p = (Player)entity1;
+                e = entity2;
+            }
             else
-                e = box1.Item1;
+            {
+                p = (Player)entity2;
+                e = entity1;
+            }
 
-            return Tuple.Create(p, e);
+            return true;
         }
     }
 }

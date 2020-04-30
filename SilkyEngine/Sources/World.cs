@@ -24,7 +24,6 @@ namespace SilkyEngine.Sources
         private HeightMap heightMap;
         Func<float, float, float, Vector3> newPosition;
         private RectangleF walkableArea;
-        private bool[,] isWalkable;
 
         public World(IWindow window, Loader loader)
         {
@@ -38,14 +37,6 @@ namespace SilkyEngine.Sources
             };
 
             walkableArea = new RectangleF(-100, -100, 200, 200);
-            isWalkable = new bool[(int)walkableArea.Width, (int)walkableArea.Height];
-            for (int i = 0; i < isWalkable.GetLength(0); i++)
-            {
-                for (int j = 0; j < isWalkable.GetLength(1); j++)
-                {
-                    isWalkable[i, j] = true;
-                }
-            }
 
             heightMap = new HeightMap("ltm_heightmap.png", walkableArea, 0, 20);
             newPosition = (x, y, z) => new Vector3(x, y + heightMap.GetHeight(x, z), z);
@@ -53,10 +44,11 @@ namespace SilkyEngine.Sources
             var rotation = new BRotateAroundY(window, 2);
             var counterRotation = new BRotateAroundY(window, -5);
             var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, heightMap.GetHeight);
-            var randomWalking = new BRandomWalk(window, 2, 4, heightMap.GetHeight);
+            var randomWalkLight = new BRandomWalk(window, 2, 4, heightMap.GetHeight);
+            var randomWalkCube = new BRandomWalk(window, 2, 2, heightMap.GetHeight);
             CreateTerrain(loader);
-            CreateObstacles(loader, rotation, counterRotation);
-            CreateLights(loader, rotateArounOrigin, randomWalking);
+            CreateObstacles(loader, rotation, counterRotation, randomWalkCube);
+            CreateLights(loader, rotateArounOrigin, randomWalkLight);
 
         }
 
@@ -66,10 +58,7 @@ namespace SilkyEngine.Sources
             if (!walkableArea.Contains(x, z))
                 return false;
 
-            x += walkableArea.Width / 2;
-            z += walkableArea.Height / 2;
-
-            return isWalkable[(int)x, (int)z];
+            return true;
         }
 
         public float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
@@ -88,15 +77,16 @@ namespace SilkyEngine.Sources
         {
             obstacles = new List<Entity>()
             {
-                new Entity(BoundingBox.Default, Behavior.DoNothing ,loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.5f,0.5f), Vector3.Zero, 0.5f),
-                new Entity(BoundingBox.Default, behaviors[0],loader.FromOBJ("diamond", "white", "jpg"), newPosition(0.5f,0.5f,3.5f), Vector3.Zero, 0.5f),
-                new Entity(BoundingBox.Default, behaviors[1],loader.FromOBJ("icosahedron", "yellow", "jpg"), newPosition(0.5f,0.5f,-3.5f), Vector3.Zero, 0.5f),
+                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.0f,0.5f), Vector3.Zero, 1),
+                //new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"), newPosition(3.5f,0.0f,3.5f), Vector3.Zero, 5f),
+                new Entity(BoundingBox.Default, behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"), newPosition(0.5f,0.0f,3.5f), Vector3.Zero, 1f),
+                new Entity(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"), newPosition(0.5f,0.0f,-3.5f), Vector3.Zero, 1f),
             };
         }
 
         private void CreateLights(Loader loader, params Behavior[] behaviors)
         {
-            var lightModel = loader.FromOBJ("sphere", "white", "jpg");
+            var lightModel = loader.FromOBJ("sphere", "Colors/white", "jpg");
 
             var ambient = new Vector3(0.2f);
             var diffuse = new Vector3(0.9f, 0.9f, 0.9f);

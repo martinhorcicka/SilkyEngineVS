@@ -143,18 +143,40 @@ namespace SilkyEngine.Sources.Controls
 
         public void OnCollision(CollisionEventArgs eventArgs)
         {
-            var pe = eventArgs.Unwrap();
-            if (pe.Item1 == null) return;
+            if (eventArgs.Unwrap(out Player p, out Entity e))
+            {
+                float speed = movementSpeed * (float)eventArgs.DeltaTime;
 
-            Player p = pe.Item1;
-            Entity e = pe.Item2;
-            float speed = movementSpeed * (float)eventArgs.DeltaTime;
+                Vector3 R = Vector3.Normalize(p.Position - e.Position);
+                R = ToBoxNormal(R);
+                if (R == Vector3.UnitY)
+                    verticalSpeed += gravity * (float)eventArgs.DeltaTime;
 
-            Vector3 R = Vector3.Normalize(p.Position - e.Position);
+                p.Translate(R * speed);
+                camera.Translate(R * speed);
+            }
+        }
 
-            p.Translate(R * speed);
-            camera.Translate(R * speed);
+        private Vector3 ToBoxNormal(Vector3 vec)
+        {
+            Func<float, float> abs = MathF.Abs;
+            Func<float, int> sgn = MathF.Sign;
+            int indexMax = 0;
+            if (abs(vec.X) < abs(vec.Y))
+            {
+                indexMax = 1;
+                if (abs(vec.Y) < abs(vec.Z))
+                    indexMax = 2;
+            }
+            else if (abs(vec.X) < abs(vec.Z))
+                indexMax = 2;
 
+
+            if (indexMax == 0) return sgn(vec.X) * Vector3.UnitX;
+            if (indexMax == 1) return sgn(vec.Y) * Vector3.UnitY;
+            if (indexMax == 2) return sgn(vec.Z) * Vector3.UnitZ;
+
+            return Vector3.UnitY;
         }
 
         private void Jump()

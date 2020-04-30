@@ -20,10 +20,15 @@ namespace SilkyEngine.Sources.Physics
                 {
                     if (b1.Item1 == b2.Item1) continue;
 
-                    if (BoundingBox.CenterDistance(b1.Item2, b2.Item2) < 1.3f)
-                        Collision?.Invoke(new CollisionEventArgs(b1, b2, deltaTime));
+                    if (IsColliding(b1.Item2, b2.Item2))
+                        Collision?.Invoke(new CollisionEventArgs(b1.Item1, b2.Item1, deltaTime));
                 }
             }
+        }
+
+        private static bool IsColliding(BoundingBox b1, BoundingBox b2)
+        {
+            return b1.Contains(b2);
         }
     }
 }
