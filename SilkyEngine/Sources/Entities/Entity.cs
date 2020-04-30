@@ -46,8 +46,12 @@ namespace SilkyEngine.Sources.Entities
         public Vector3 Dimensions => dimensions;
         public float Scale => scale;
 
+        private Vector3 movedBy = Vector3.Zero;
+        public Vector3 MovedBy => movedBy;
+
         public virtual void Translate(Vector3 dp)
         {
+            movedBy = dp;
             boundingBox.Translate(dp);
             position += dp;
         }

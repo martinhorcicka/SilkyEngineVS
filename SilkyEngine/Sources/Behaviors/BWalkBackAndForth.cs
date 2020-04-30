@@ -27,6 +27,8 @@ namespace SilkyEngine.Sources.Behaviors
             {
                 remaining = offset.Length();
                 direction *= -1;
+                foreach (var e in entities)
+                    e.Translate(Vector3.Zero);
                 return;
             }
 
@@ -34,9 +36,7 @@ namespace SilkyEngine.Sources.Behaviors
             remaining -= dDistance;
 
             foreach (var e in entities)
-            {
                 e.Translate(dDistance * direction);
-            }
         }
     }
 }

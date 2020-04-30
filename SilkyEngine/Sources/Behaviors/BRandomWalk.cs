@@ -31,6 +31,8 @@ namespace SilkyEngine.Sources.Behaviors
             if (sleepTimer > 0)
             {
                 sleepTimer -= (float)deltaTime;
+                foreach (var e in entities)
+                    e.Translate(Vector3.Zero);
                 return;
             }
 

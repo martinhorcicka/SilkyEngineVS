@@ -62,12 +62,9 @@ namespace SilkyEngine.Sources
             }
             gl = GL.GetApi();
             loader = new Loader(gl);
-            world = new World(window, loader);
             var controls = new ThirdPersonControls(window);
             CollisionDetection.Collision += controls.OnCollision;
-            controls.SubscribeHeightMap(world.GetHeight);
-            controls.SubscribeWorld(world);
-            world.MakePlayer(loader, "capsule", "Colors/blue", "jpg", controls);
+            world = new World(window, loader, controls);
             renderer = new Renderer(gl, window, controls);
 
             basicShader = loader.LoadShader("basic");

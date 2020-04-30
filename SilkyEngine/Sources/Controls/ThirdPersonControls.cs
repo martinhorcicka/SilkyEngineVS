@@ -166,8 +166,7 @@ namespace SilkyEngine.Sources.Controls
                     verticalSpeed = 0;
                 }
 
-
-                Translate(R * distance, p);
+                Translate(R * distance + e.MovedBy, p);
             }
         }
 
