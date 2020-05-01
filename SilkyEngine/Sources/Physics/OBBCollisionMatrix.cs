@@ -5,13 +5,13 @@ using System.Text;
 
 namespace SilkyEngine.Sources.Physics
 {
-    public class OOBCollisionMatrix
+    public class OBBCollisionMatrix
     {
         private bool[,] computed = new bool[3, 3];
         private float[,] data = new float[3, 3];
         private Vector3[] A, B;
 
-        public OOBCollisionMatrix(Vector3[] A, Vector3[] B)
+        public OBBCollisionMatrix(Vector3[] A, Vector3[] B)
         {
             this.A = A;
             this.B = B;

@@ -19,7 +19,7 @@ namespace SilkyEngine.Sources.Entities
 
         public Vector3 Focus => Center + focus;
         public Vector3 Right => Vector3.Cross(Front, Up);
-        public float JumpPower => 8f;
+        public float JumpPower => 10f;
         public float Thickness => 0.5f;
 
         public Vector3 Front

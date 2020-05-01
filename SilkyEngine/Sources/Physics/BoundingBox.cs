@@ -65,15 +65,14 @@ namespace SilkyEngine.Sources.Physics
             var B = box.MakeAxes();
             var b = box.GetDimensions;
             Vector3 D = box.Center - center;
-            OOBCollisionMatrix C = new OOBCollisionMatrix(A, B);
+            OBBCollisionMatrix C = new OBBCollisionMatrix(A, B);
             for (int i = 0; i < 15; i++)
-            {
                 if (ComputeRs(i, A, a, B, b, C, D)) return false;
-            }
+
             return true;
         }
 
-        private bool ComputeRs(int i, Vector3[] A, float[] a, Vector3[] B, float[] b, OOBCollisionMatrix C, Vector3 D)
+        private bool ComputeRs(int i, Vector3[] A, float[] a, Vector3[] B, float[] b, OBBCollisionMatrix C, Vector3 D)
         {
             Func<float, float> abs = MathF.Abs;
             Func<Vector3, Vector3, float> dot = (vec1, vec2) => Vector3.Dot(vec1, vec2);

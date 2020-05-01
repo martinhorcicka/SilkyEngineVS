@@ -23,7 +23,7 @@ namespace SilkyEngine.Sources.Controls
         private const float DEFAULT_HEIGHT = 5;
         private Vector2 prevMousePos;
         private float distance, verticalSpeed;
-        private const float gravity = 10f;
+        private const float gravity = 20f;
         private bool isInAir;
         private bool playerCollided;
 
@@ -44,11 +44,13 @@ namespace SilkyEngine.Sources.Controls
                 player.SnapToFront(camera.Front);
 
         }
+
         protected override void OnMouseUp(IMouse mouse, MouseButton button)
         {
             base.OnMouseUp(mouse, button);
             mouse.Cursor.CursorMode = CursorMode.Normal;
         }
+
         protected override void OnMouseMove(IMouse mouse, PointF point)
         {
             Vector2 mousePos = new Vector2(point.X, point.Y);
@@ -69,14 +71,8 @@ namespace SilkyEngine.Sources.Controls
 
         private void RecalculateCamera(float yawChange, float pitchChange)
         {
-            //float terraintHeight = HeightMap?.Invoke(camera.Position.X, camera.Position.Z) ?? 0.0f;
-            //if (camera.Position.Y <= terraintHeight)
-            //    camera.SetHeight(DEFAULT_HEIGHT + terraintHeight + player.Focus.Y);
-            //else
-            //    camera.SetHeight(DEFAULT_HEIGHT + player.Focus.Y);
             camera.ChangeYaw(yawChange);
             if (camera.ChangePitch(-pitchChange)) pitchChange = 0;
-            //pitchChange = 0;
 
             Vector3 R = Vector3.Normalize(camera.Position - player.Focus);
             Vector3 orthToRinXZ = Vector3.Normalize(new Vector3(R.Z, 0, -R.X));
@@ -139,6 +135,7 @@ namespace SilkyEngine.Sources.Controls
                     break;
             }
         }
+
         protected override void OnScroll(IMouse mouse, ScrollWheel wheel)
         {
             distance -= wheel.Y;
@@ -154,7 +151,7 @@ namespace SilkyEngine.Sources.Controls
                 playerCollided = true;
                 float distance = movementSpeed * (float)eventArgs.DeltaTime;
                 Vector3 R = Vector3.Normalize(p.Center - e.Center);
-                R = ToBoxNormal(R, p.Dimensions, e.Dimensions);
+                R = ToBoxNormal(R, e.Dimensions);
                 if (R.Y == 1)
                 {
                     verticalSpeed = 0;
@@ -170,11 +167,11 @@ namespace SilkyEngine.Sources.Controls
             }
         }
 
-        private Vector3 ToBoxNormal(Vector3 inputVec, params Vector3[] dimensions)
+        private Vector3 ToBoxNormal(Vector3 inputVec, Vector3 eDim)
         {
             Func<float, float> abs = MathF.Abs;
             Func<float, int> sgn = MathF.Sign;
-            Vector3 vec = inputVec / dimensions[0] / dimensions[1];
+            Vector3 vec = inputVec / eDim;
             int indexMax = 0;
             if (abs(vec.X) < abs(vec.Y))
             {

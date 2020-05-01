@@ -46,18 +46,17 @@ namespace SilkyEngine.Sources
             heightMap = new HeightMap("ltm_heightmap.png", walkableArea, 0, 20);
             newPosition = (x, y, z) => new Vector3(x, y + GetHeight(x, z), z);
 
-            var rotation = new BRotateAroundY(window, 2);
-            var counterRotation = new BRotateAroundY(window, -5);
-            var rotateArounOrigin = new BRotateAround(window, Vector3.Zero, Vector3.UnitY, 1, GetHeight);
-            var randomWalkLight = new BRandomWalk(window, 2, 4, GetHeight);
-            var randomWalkCube = new BRandomWalk(window, 2, 5, GetHeight);
-            var walkBackAndForth = new BWalkBackAndForth(window, 2, 4 * Vector3.UnitX);
+            var rotation = new BRotateAroundY(window, speed: 2);
+            var counterRotation = new BRotateAroundY(window, speed: -5);
+            var rotateArounOrigin = new BRotateAround(window, point: Vector3.Zero, axis: Vector3.UnitY, 1, heightMap: GetHeight);
+            var randomWalkLight = new BRandomWalk(window, sleepTime: 2, walkingSpeed: 4, heightMap: GetHeight);
+            var randomWalkCube = new BRandomWalk(window, sleepTime: 2, walkingSpeed: 5, GetHeight);
+            var walkBackAndForth = new BWalkBackAndForth(window, speed: 2, offset: 4 * Vector3.UnitX);
 
-            CreatePlayer(loader, "capsule", "Colors/blue", "jpg");
+            CreatePlayer(loader);
             CreateTerrain(loader);
             CreateObstacles(loader, rotation, counterRotation, walkBackAndForth, randomWalkCube);
             CreateLights(loader, rotateArounOrigin, randomWalkLight);
-
         }
 
         public bool IsWalkable(Vector3 position)
@@ -69,11 +68,12 @@ namespace SilkyEngine.Sources
             return true;
         }
 
-        public float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
+        private float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
 
-        private void CreatePlayer(Loader loader, string OBJModel, string texName, string texFormat)
+        private void CreatePlayer(Loader loader)
         {
-            player = new Player(BoundingBox.Default, (IPlayerController)controller, loader.FromOBJ(OBJModel, texName, texFormat),
+            player = new Player(BoundingBox.Default, (IPlayerController)controller,
+                loader.FromOBJ("capsule", "Colors/blue", "jpg"),
                 newPosition(0, 0, 0), Vector3.Zero, 1f, 0.5f * new Vector3(1, 2, 1));
         }
 

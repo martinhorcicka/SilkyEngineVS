@@ -31,8 +31,6 @@ namespace SilkyEngine.Sources.Behaviors
             if (sleepTimer > 0)
             {
                 sleepTimer -= (float)deltaTime;
-                foreach (var e in entities)
-                    e.Translate(Vector3.Zero);
                 return;
             }
 
@@ -42,6 +40,9 @@ namespace SilkyEngine.Sources.Behaviors
                 sleepTimer = sleepTime;
                 walkTimer = (MAX_DURATION - MIN_DURATION) * (float)generator.NextDouble() + MIN_DURATION;
                 currentDirection = Computation.RandomVector2(generator);
+
+                foreach (var e in entities)
+                    e.Translate(Vector3.Zero);
             }
             else
             {
