@@ -2,22 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 using Silk.NET.Input;
 using Silk.NET.Input.Common;
+using Silk.NET.OpenGL;
 using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Behaviors;
-using SilkyEngine.Sources.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 
 namespace SilkyEngine.Sources.Controls
 {
     public abstract class Controller : Behavior
     {
+        private IWindow window;
         protected const float MAX_PITCH = 89f * MathF.PI / 180f;
         protected static Key[] controlKeys = new Key[] { Key.W, Key.A, Key.S, Key.D, Key.Space, Key.ShiftLeft };
         protected static MouseButton[] mouseButtons = new MouseButton[] { MouseButton.Left, MouseButton.Right };
@@ -27,6 +26,8 @@ namespace SilkyEngine.Sources.Controls
 
         public Controller(IWindow window, float movementSpeed = 10f, float mouseSensitivity = 0.002f) : base(window)
         {
+            this.window = window;
+
             foreach (var mb in mouseButtons)
                 isMBPressed.Add(mb, false);
 
@@ -59,20 +60,52 @@ namespace SilkyEngine.Sources.Controls
             if (mouseButtons.Contains(button))
                 isMBPressed[button] = true;
         }
+
         protected virtual void OnMouseUp(IMouse mouse, MouseButton button)
         {
             if (mouseButtons.Contains(button))
                 isMBPressed[button] = false;
         }
+
         protected virtual void OnKeyDown(IKeyboard keyboard, Key key, int mode)
         {
             if (controlKeys.Contains(key))
                 isPressed[key] = true;
+
+            switch (key)
+            {
+                case Key.Escape:
+                    window.Close();
+                    break;
+            }
         }
+
         protected virtual void OnKeyUp(IKeyboard keyboard, Key key, int mode)
         {
             if (controlKeys.Contains(key))
                 isPressed[key] = false;
+
+            GL gl;
+            switch (key)
+            {
+                case Key.F11:
+                    window.WindowState = (window.WindowState == WindowState.Normal) ? WindowState.Fullscreen : WindowState.Normal;
+                    break;
+                case Key.M:
+                    window.CreateInput().Mice[0].Cursor.CursorMode = (window.CreateInput().Mice[0].Cursor.CursorMode == CursorMode.Disabled) ? CursorMode.Normal : CursorMode.Disabled;
+                    break;
+                case Key.V:
+                    window.VSync = (window.VSync == VSyncMode.Off) ? VSyncMode.On : VSyncMode.Off;
+                    break;
+                case Key.P:
+                    gl = GL.GetApi();
+                    gl.PolygonMode(GLEnum.FrontAndBack, PolygonMode.Fill);
+                    break;
+                case Key.L:
+                    gl = GL.GetApi();
+                    gl.PolygonMode(GLEnum.FrontAndBack, PolygonMode.Line);
+                    break;
+            }
         }
 
         private void CreateCursor(string cursorIconPath, ICursor cursor)

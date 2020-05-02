@@ -1,5 +1,6 @@
 using Silk.NET.OpenGL;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Physics.Collisions;
 using System.Numerics;
 
 namespace SilkyEngine.Sources.Graphics

@@ -1,9 +1,7 @@
 ﻿using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Tools;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace SilkyEngine.Sources.Behaviors
 {

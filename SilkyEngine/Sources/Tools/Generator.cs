@@ -18,7 +18,7 @@ namespace SilkyEngine.Sources.Tools
         {
             string name = HeightMap.ToString() + "Terrain" + num.ToString();
             TexturedModel model = new TexturedModel(loader.LoadRawModel(name, () => HeightMapTerrainVertices(area, density, HeightMap)), loader.LoadTexture(format, texName));
-            return new Entity(BoundingBox.None, Behavior.DoNothing, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
+            return new Terrain(model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
         }
 
         public static List<Entity> HeightMapTerrain(Loader loader, string texName, string format, float density, Func<float, float, float> HeightMap)
@@ -74,7 +74,7 @@ namespace SilkyEngine.Sources.Tools
             }
 
             List<OBJTriangle> triangles = new List<OBJTriangle>(2 * numX * numZ);
-            Func<int, int, int> listIndex = (i, j) => j * (numX + 1) + i;
+            int listIndex(int i, int j) => j * (numX + 1) + i;
             for (int j = 0; j < numZ; j++)
             {
                 for (int i = 0; i < numX; i++)

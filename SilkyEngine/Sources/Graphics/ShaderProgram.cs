@@ -5,6 +5,7 @@ using System.Numerics;
 using Silk.NET.OpenGL;
 using SilkyEngine.Sources.Graphics.Structs;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Physics.Collisions;
 
 namespace SilkyEngine.Sources.Graphics
 {
@@ -52,11 +53,11 @@ namespace SilkyEngine.Sources.Graphics
 
         protected void SetUniform(string name, LightStruct light)
         {
-            SetUniform(name + ".position", light.position);
+            SetUniform(name + ".position", light.Position);
 
-            SetUniform(name + ".diffuse", light.diffuse);
-            SetUniform(name + ".ambient", light.ambient);
-            SetUniform(name + ".specular", light.specular);
+            SetUniform(name + ".diffuse", light.Diffuse);
+            SetUniform(name + ".ambient", light.Ambient);
+            SetUniform(name + ".specular", light.Specular);
 
             SetUniform(name + ".constant", light.constant);
             SetUniform(name + ".linear", light.linear);

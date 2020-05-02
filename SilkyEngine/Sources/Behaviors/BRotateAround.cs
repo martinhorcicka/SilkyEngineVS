@@ -21,6 +21,7 @@ namespace SilkyEngine.Sources.Behaviors
             this.speed = speed;
             this.heightMap = heightMap;
         }
+
         protected override void OnUpdate(double deltaTime)
         {
             foreach (var e in entities)

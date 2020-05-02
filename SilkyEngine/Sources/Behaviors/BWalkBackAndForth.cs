@@ -1,8 +1,5 @@
 ﻿using Silk.NET.Windowing.Common;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace SilkyEngine.Sources.Behaviors
 {
@@ -12,6 +9,7 @@ namespace SilkyEngine.Sources.Behaviors
         private Vector3 offset;
         private Vector3 direction;
         private float remaining;
+
         public BWalkBackAndForth(IWindow window, float speed, Vector3 offset)
             : base(window)
         {

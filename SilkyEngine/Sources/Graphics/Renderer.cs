@@ -6,6 +6,7 @@ using Silk.NET.OpenGL;
 using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Interfaces;
+using SilkyEngine.Sources.Physics.Collisions;
 using SilkyEngine.Sources.Tools;
 
 namespace SilkyEngine.Sources.Graphics
@@ -59,9 +60,8 @@ namespace SilkyEngine.Sources.Graphics
 
         public void SubscribeRenderable(Entity entity, ShaderTypes shaderType)
         {
-            if (entity is LightEntity)
+            if (entity is LightEntity newLight)
             {
-                LightEntity newLight = (LightEntity)entity;
                 newLight.LightMoved += OnLightMove;
                 lights.Add(newLight);
                 UpdateLights();

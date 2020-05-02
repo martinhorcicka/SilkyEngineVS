@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Graphics.Structs;
-using SilkyEngine.Sources.Physics;
+using SilkyEngine.Sources.Physics.Collisions;
 
 namespace SilkyEngine.Sources.Entities
 {
@@ -12,8 +11,9 @@ namespace SilkyEngine.Sources.Entities
     {
         public event Action LightMoved;
         private LightStruct lightStruct;
-        public LightEntity(BoundingBox boundingBox, Behavior behavior, LightStruct lightStruct, TexturedModel texturedModel, float scale)
-            : base(boundingBox, behavior, texturedModel, lightStruct.position, Vector3.Zero, scale)
+
+        public LightEntity(BoundingVolume boundingVolume, Behavior behavior, LightStruct lightStruct, TexturedModel texturedModel, float scale)
+            : base(boundingVolume, behavior, texturedModel, lightStruct.Position, Vector3.Zero, scale)
         {
             this.lightStruct = lightStruct;
         }
@@ -21,11 +21,18 @@ namespace SilkyEngine.Sources.Entities
         public override void Translate(Vector3 dp)
         {
             base.Translate(dp);
-            lightStruct.position = position;
+            lightStruct.Position = position;
             LightMoved?.Invoke();
         }
 
         public LightStruct GetLightStruct() => lightStruct;
-        public string GetLightStructName() => lightStruct.name;
+        public string GetLightStructName() => lightStruct.Name;
+
+        public override void Collision(CollisionInfo cInfo)
+        {
+            if (!(cInfo.Target is Player)) return;
+
+            Console.WriteLine($"{DateTime.Now}: A light at {position} detected player at {cInfo.Target.Position}!");
+        }
     }
 }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Entities;
-using SilkyEngine.Sources.Interfaces;
 
 namespace SilkyEngine.Sources.Behaviors
 {
@@ -23,9 +22,5 @@ namespace SilkyEngine.Sources.Behaviors
         }
 
         protected abstract void OnUpdate(double deltaTime);
-
-        public interface IBindable
-        {
-        }
     }
 }

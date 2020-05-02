@@ -40,7 +40,6 @@ namespace SilkyEngine.Sources.Controls
         {
             float speed = movementSpeed * (float)deltaTime;
             Vector3 dPos = Vector3.Zero;
-            Vector3 cFront = camera.Front;
             if (isPressed[Key.W])
                 dPos += camera.Front;
             if (isPressed[Key.S])

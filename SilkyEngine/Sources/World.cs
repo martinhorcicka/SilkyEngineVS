@@ -5,7 +5,7 @@ using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Graphics.Structs;
 using SilkyEngine.Sources.Interfaces;
-using SilkyEngine.Sources.Physics;
+using SilkyEngine.Sources.Physics.Collisions;
 using SilkyEngine.Sources.Tools;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,9 @@ namespace SilkyEngine.Sources
     public class World
     {
         private Player player;
+#pragma warning disable IDE0044 // Přidat modifikátor jen pro čtení
         private Controller controller;
+#pragma warning restore IDE0044 // Přidat modifikátor jen pro čtení
         private List<Entity> terrain;
         private List<Entity> obstacles;
         private List<LightEntity> lights;
@@ -26,18 +28,9 @@ namespace SilkyEngine.Sources
         Func<float, float, float, Vector3> newPosition;
         private RectangleF walkableArea;
 
-        public World(IWindow window, Loader loader, Controller controller)
+        public World(IWindow window, Loader loader)
         {
-            Func<float, float> sin = MathF.Sin, cos = MathF.Cos;
-            Func<float, float, float> CustomHeightMap = (x, y) =>
-            {
-                x /= 1; y /= 1;
-                x -= 4;
-                float f = sin(cos(x)) * sin(cos(y));
-                return f;
-            };
-
-            this.controller = controller;
+            controller = new ThirdPersonControls(window);
             ((ThirdPersonControls)controller).SubscribeWorld(this);
             ((ThirdPersonControls)controller).SubscribeHeightMap(GetHeight);
 
@@ -68,13 +61,15 @@ namespace SilkyEngine.Sources
             return true;
         }
 
+        public ICameraController Controller => (ICameraController)controller;
+
         private float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
 
         private void CreatePlayer(Loader loader)
         {
             player = new Player(BoundingBox.Default, (IPlayerController)controller,
                 loader.FromOBJ("capsule", "Colors/blue", "jpg"),
-                newPosition(0, 0, 0), Vector3.Zero, 1f, 0.5f * new Vector3(1, 2, 1));
+                newPosition(0, 0, 0), Vector3.Zero, 1f, new Vector3(1, 2, 1) * 0.5f);
         }
 
         private void CreateTerrain(Loader loader)
@@ -86,27 +81,26 @@ namespace SilkyEngine.Sources
         {
             obstacles = new List<Entity>()
             {
-                new Entity(BoundingBox.Default, behaviors[3], loader.FromOBJ("cube", "minecraft_stone", "jpg"),
-                    newPosition( 3.5f, 0.0f, 0.5f), Vector3.Zero, 1),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                    newPosition(-5,0,0), Vector3.Zero, 1),
 
-                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
                     newPosition( 3.5f, 4.5f, 0.5f), Vector3.Zero, 1),
 
-                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
                     newPosition( 9.5f, 0.0f,-6.0f), Vector3.Zero, 2),
 
-                new Entity(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
                     newPosition( 7.5f, 0.0f, 9.5f), Vector3.Zero, 3),
 
-                new Entity(BoundingBox.Default, behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
+                new Obstacle(BoundingBox.Default, behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
                     newPosition(-3.5f, 0.0f, 6.5f), Vector3.Zero, 1, new Vector3(1,0.5f,1)),
 
-                new Entity(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
+                new Obstacle(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
                     newPosition(-8.5f, 0.0f,-3.5f), Vector3.Zero, 1),
 
-                new Entity(BoundingBox.Default, behaviors[2], loader.FromOBJ("cube", "wood", "jpg"),
-                    //newPosition(7,8,2), Vector3.Zero, 1, new Vector3(1,0.25f,2)),
-                    newPosition(7,7,2), Vector3.Zero, 1, Vector3.One),
+                new Obstacle(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "wood", "jpg"),
+                    newPosition(7,8,2), Vector3.Zero, 1, new Vector3(1,0.25f,2)),
         };
         }
 
@@ -133,9 +127,9 @@ namespace SilkyEngine.Sources
 
             lights = new List<LightEntity>()
             {
-                new LightEntity(BoundingBox.None, behaviors[0], light3, lightModel, 0.15f),
-                new LightEntity(BoundingBox.None, Behavior.DoNothing, light, lightModel, 10f),
-                new LightEntity(BoundingBox.None, behaviors[1], light2, lightModel, 0.2f),
+                new LightEntity(BoundingSphere.None, Behavior.DoNothing, light, lightModel, 10f),
+                new LightEntity(BoundingSphere.None, behaviors[1], light2, lightModel, 0.2f),
+                new LightEntity(BoundingSphere.None, behaviors[0], light3, lightModel, 0.15f),
             };
         }
 

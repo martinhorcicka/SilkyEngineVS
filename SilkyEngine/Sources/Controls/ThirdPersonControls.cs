@@ -7,7 +7,6 @@ using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Interfaces;
-using SilkyEngine.Sources.Physics;
 using SilkyEngine.Sources.Tools;
 
 namespace SilkyEngine.Sources.Controls
@@ -142,52 +141,6 @@ namespace SilkyEngine.Sources.Controls
             if (distance < MIN_DISTANCE) distance = MIN_DISTANCE;
             else if (distance > MAX_DISTANCE) distance = MAX_DISTANCE;
             RecalculateCamera(0, 0);
-        }
-
-        public void OnCollision(CollisionEventArgs eventArgs)
-        {
-            if (eventArgs.Unwrap(out Player p, out Entity e))
-            {
-                playerCollided = true;
-                float distance = movementSpeed * (float)eventArgs.DeltaTime;
-                Vector3 R = Vector3.Normalize(p.Center - e.Center);
-                R = ToBoxNormal(R, e.Dimensions);
-                if (R.Y == 1)
-                {
-                    verticalSpeed = 0;
-                    isInAir = false;
-                    R.Y = 0;
-                }
-                if (R.Y == -1)
-                {
-                    verticalSpeed = 0;
-                }
-
-                Translate(R * distance + e.MovedBy, p);
-            }
-        }
-
-        private Vector3 ToBoxNormal(Vector3 inputVec, Vector3 eDim)
-        {
-            Func<float, float> abs = MathF.Abs;
-            Func<float, int> sgn = MathF.Sign;
-            Vector3 vec = inputVec / eDim;
-            int indexMax = 0;
-            if (abs(vec.X) < abs(vec.Y))
-            {
-                indexMax = 1;
-                if (abs(vec.Y) < abs(vec.Z))
-                    indexMax = 2;
-            }
-            else if (abs(vec.X) < abs(vec.Z))
-                indexMax = 2;
-
-
-            if (indexMax == 0) return sgn(vec.X) * Vector3.UnitX;
-            if (indexMax == 1) return sgn(vec.Y) * Vector3.UnitY;
-            if (indexMax == 2) return sgn(vec.Z) * Vector3.UnitZ;
-
-            return Vector3.UnitY;
         }
 
         private void Jump()

@@ -94,11 +94,11 @@ namespace SilkyEngine.Sources.Graphics
             var fileHandle = new StreamReader("Resources/Models/" + objName + ".obj");
             var ic = CultureInfo.InvariantCulture;
 
-            Func<string, bool> isPos = s => s.StartsWith("v ");
-            Func<string, bool> isTex = s => s.StartsWith("vt ");
-            Func<string, bool> isNorm = s => s.StartsWith("vn ");
-            Func<string, bool> isTri = s => s.StartsWith("f ");
-            Func<string, bool> isValid = s => isPos(s) || isTex(s) || isNorm(s) || isTri(s);
+            static bool isPos(string s) => s.StartsWith("v ");
+            static bool isTex(string s) => s.StartsWith("vt ");
+            static bool isNorm(string s) => s.StartsWith("vn ");
+            static bool isTri(string s) => s.StartsWith("f ");
+            static bool isValid(string s) => isPos(s) || isTex(s) || isNorm(s) || isTri(s);
 
             while (!fileHandle.EndOfStream)
             {
@@ -133,7 +133,7 @@ namespace SilkyEngine.Sources.Graphics
         public static Vertex[] DataToVertices(List<Vector3> positions, List<Vector2> texCoords, List<Vector3> normals, List<OBJTriangle> triangles)
         {
             List<Vertex> vertices = new List<Vertex>();
-            Func<int[], Vertex> makeVertex = vert => new Vertex(positions[vert[0]], texCoords[vert[1]], normals[vert[2]]);
+            Vertex makeVertex(int[] vert) => new Vertex(positions[vert[0]], texCoords[vert[1]], normals[vert[2]]);
             foreach (var tri in triangles)
             {
                 vertices.Add(makeVertex(tri.v1));

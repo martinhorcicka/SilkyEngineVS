@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace SilkyEngine.Sources.Physics
+namespace SilkyEngine.Sources.Physics.Collisions
 {
     public class OBBCollisionMatrix
     {
