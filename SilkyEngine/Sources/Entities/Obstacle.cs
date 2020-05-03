@@ -27,6 +27,10 @@ namespace SilkyEngine.Sources.Entities
                 p.VerticalSpeed = 0;
                 dPos.Y = 0;
             }
+            else if(dPos.Y == -1)
+            {
+                p.VerticalSpeed = 0;
+            }
 
             p.Translate(dPos * distance);
         }
