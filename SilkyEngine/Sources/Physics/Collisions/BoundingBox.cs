@@ -1,5 +1,6 @@
 ﻿using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Tools;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace SilkyEngine.Sources.Physics.Collisions
@@ -7,19 +8,27 @@ namespace SilkyEngine.Sources.Physics.Collisions
     public class BoundingBox : BoundingVolume
     {
         public static BoundingBox Default { get; } = new BoundingBox(Vector3.Zero, Vector3.Zero, 0);
-        new public static BoundingBox None { get; } = new BoundingBox(Vector3.Zero, Vector3.Zero, 0);
+        public static BoundingBox None { get; } = new BoundingBox(Vector3.Zero, Vector3.Zero, 0);
 
-        private static Vector3[] defaultVertices = new Vector3[]
+        private static Vector3[] DefaultVertices = MakeDefaultVertices();
+
+        private static Vector3[] MakeDefaultVertices()
         {
-            new Vector3(-1,-1,-1), // Jsem dobrej blb teda!!
-            new Vector3(-1,-1, 1), // <== Tady jsem se přespal v -1 a hledal jsem chyby někde uplně jinde dva dny v kuse..
-            new Vector3(-1, 1,-1),
-            new Vector3(-1, 1, 1),
-            new Vector3( 1,-1,-1),
-            new Vector3( 1,-1, 1),
-            new Vector3( 1, 1,-1),
-            new Vector3( 1, 1, 1),
-        };
+            List<Vector3> vertices = new List<Vector3>(27);
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    for (int k = 0; k < 3; k++)
+                    {
+                        vertices.Add(new Vector3(i - 1, j - 1, k - 1));
+                    }
+                }
+            }
+            vertices.Remove(Vector3.Zero);
+
+            return vertices.ToArray();
+        }
 
         private BoundingBox(Vector3 center, Vector3 rotation, float sideLength) : this(center, rotation, sideLength * Vector3.One)
         { }
@@ -29,11 +38,11 @@ namespace SilkyEngine.Sources.Physics.Collisions
 
         public Vector3[] GetVertices()
         {
-            Vector3[] vertices = new Vector3[8];
+            Vector3[] vertices = new Vector3[DefaultVertices.Length];
             Matrix4x4 scaleMat = Matrix4x4.CreateScale(dimensions);
             Matrix4x4 transformMat = scaleMat * MakeRotationMatrix();
-            for (int i = 0; i < defaultVertices.Length; i++)
-                vertices[i] = Computation.MatMul(transformMat, defaultVertices[i]) + center;
+            for (int i = 0; i < DefaultVertices.Length; i++)
+                vertices[i] = Computation.MatMul(transformMat, DefaultVertices[i]) + center;
 
             return vertices;
         }

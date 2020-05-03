@@ -7,9 +7,9 @@ namespace SilkyEngine.Sources.Graphics.Structs
         public OBJTriangle(string objTriangle)
         {
             string[] verts = objTriangle.Split(' ');
-            v1 = manageVert(verts[1]);
-            v2 = manageVert(verts[2]);
-            v3 = manageVert(verts[3]);
+            v1 = ManageVert(verts[1]);
+            v2 = ManageVert(verts[2]);
+            v3 = ManageVert(verts[3]);
         }
 
         public OBJTriangle(int[] v1, int[] v2, int[] v3)
@@ -19,7 +19,7 @@ namespace SilkyEngine.Sources.Graphics.Structs
             this.v3 = v3;
         }
 
-        private static int[] manageVert(string vert)
+        private static int[] ManageVert(string vert)
         {
             string[] nums = vert.Split('/');
             return new int[3] { int.Parse(nums[0]) - 1, int.Parse(nums[1]) - 1, int.Parse(nums[2]) - 1 };

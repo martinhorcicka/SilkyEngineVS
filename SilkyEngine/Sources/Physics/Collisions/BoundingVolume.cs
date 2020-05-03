@@ -10,8 +10,6 @@ namespace SilkyEngine.Sources.Physics.Collisions
     {
         public virtual bool Overlaps(BoundingVolume volume) => GJKOverlap(volume);
 
-        public static BoundingVolume None { get; } = null;
-
         protected Vector3 center;
         protected Vector3 rotation;
         protected Vector3 dimensions;

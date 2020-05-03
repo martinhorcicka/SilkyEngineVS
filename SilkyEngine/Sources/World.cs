@@ -18,9 +18,7 @@ namespace SilkyEngine.Sources
     public class World
     {
         private Player player;
-#pragma warning disable IDE0044 // Přidat modifikátor jen pro čtení
         private Controller controller;
-#pragma warning restore IDE0044 // Přidat modifikátor jen pro čtení
         private List<Entity> terrain;
         private List<Entity> obstacles;
         private List<LightEntity> lights;

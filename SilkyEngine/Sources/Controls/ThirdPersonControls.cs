@@ -21,18 +21,13 @@ namespace SilkyEngine.Sources.Controls
         private const float MAX_DISTANCE = 25;
         private const float DEFAULT_HEIGHT = 5;
         private Vector2 prevMousePos;
-        private float distance, verticalSpeed;
+        private float distance;
         private const float gravity = 20f;
-        private bool isInAir;
-        private bool playerCollided;
-
 
         public ThirdPersonControls(IWindow window) : base(window)
         {
             window.CreateInput().Mice[0].Cursor.CursorMode = CursorMode.Normal;
-            verticalSpeed = 0;
             distance = Computation.Average(MIN_DISTANCE, MAX_DISTANCE);
-            isInAir = true;
         }
 
         protected override void OnMouseDown(IMouse mouse, MouseButton button)
@@ -84,7 +79,7 @@ namespace SilkyEngine.Sources.Controls
 
         protected override void OnUpdate(double deltaTime)
         {
-            if (!playerCollided) isInAir = true;
+            if (!player.Collided) player.IsInAir = true;
             float distance = movementSpeed * (float)deltaTime;
 
             Vector3 dPos = Vector3.Zero;
@@ -103,23 +98,21 @@ namespace SilkyEngine.Sources.Controls
                 Translate(dPos * distance);
             }
 
-            if (isInAir)
+            if (player.IsInAir)
             {
-                verticalSpeed -= gravity * (float)deltaTime;
-                Translate(Vector3.UnitY * verticalSpeed * (float)deltaTime);
+                player.VerticalSpeed -= gravity * (float)deltaTime;
+                Translate(Vector3.UnitY * player.VerticalSpeed * (float)deltaTime);
             }
 
             float terraintHeight = HeightMap?.Invoke(player.Position.X, player.Position.Z) ?? 0f;
             if (player.Position.Y < terraintHeight)
             {
-                isInAir = false;
-                verticalSpeed = 0;
-                float dHeight = camera.Position.Y - player.Position.Y;
-                player.SetHeight(terraintHeight);
-                camera.SetHeight(terraintHeight + dHeight);
+                player.IsInAir = false;
+                player.VerticalSpeed = 0;
+                SetHeight(terraintHeight);
             }
 
-            playerCollided = false;
+            player.Collided = false;
         }
 
         protected override void OnKeyDown(IKeyboard keyboard, Key key, int mode)
@@ -128,7 +121,7 @@ namespace SilkyEngine.Sources.Controls
             switch (key)
             {
                 case Key.Space:
-                    if (!isInAir) Jump();
+                    if (!player.IsInAir) Jump();
                     break;
                 default:
                     break;
@@ -145,8 +138,8 @@ namespace SilkyEngine.Sources.Controls
 
         private void Jump()
         {
-            isInAir = true;
-            verticalSpeed = player.JumpPower;
+            player.IsInAir = true;
+            player.VerticalSpeed = player.JumpPower;
             Translate(0.1f * Vector3.UnitY);
         }
 
@@ -154,10 +147,26 @@ namespace SilkyEngine.Sources.Controls
         {
             p ??= player;
             p.Translate(dp);
-            camera.Translate(dp);
         }
 
-        public void SubscribePlayer(Player player) => this.player = player;
+        private void SetHeight(float newHeight)
+        {
+            float dHeight = camera.Position.Y - player.Position.Y;
+            player.SetHeight(newHeight);
+            camera.SetHeight(newHeight + dHeight);
+        }
+
+        private void OnPlayerMove(Vector3 dPos)
+        {
+            camera.Translate(dPos);
+        }
+
+        public void SubscribePlayer(Player player)
+        {
+            this.player = player;
+            this.player.Move += OnPlayerMove;
+            this.movementSpeed = player.MovementSpeed;
+        }
 
         public void SubscribeCamera(Camera camera)
         {
