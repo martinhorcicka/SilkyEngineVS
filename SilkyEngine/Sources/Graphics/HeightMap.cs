@@ -27,6 +27,7 @@ namespace SilkyEngine.Sources.Graphics
             {
                 imgData[i % img.Width, i / img.Width] = pixelSpan[i].R;
             }
+            img.Dispose();
         }
 
         public float GetHeight(float x, float y)

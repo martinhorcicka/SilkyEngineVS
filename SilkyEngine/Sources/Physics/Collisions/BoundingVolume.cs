@@ -1,4 +1,5 @@
 ﻿using SilkyEngine.Sources.Entities;
+using SilkyEngine.Sources.Tools;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -8,7 +9,7 @@ namespace SilkyEngine.Sources.Physics.Collisions
 {
     public abstract class BoundingVolume
     {
-        public virtual bool Overlaps(BoundingVolume volume) => GJKOverlap(volume);
+        public virtual bool Overlaps(BoundingVolume volume, out Vector3 normal) => GJKOverlap(volume, out normal);
 
         protected Vector3 center;
         protected Vector3 rotation;
@@ -34,8 +35,9 @@ namespace SilkyEngine.Sources.Physics.Collisions
 
         public abstract BoundingVolume FromEntity(Entity entity);
 
-        protected bool GJKOverlap(BoundingVolume volume)
+        protected bool GJKOverlap(BoundingVolume volume, out Vector3 normal)
         {
+            normal = Vector3.UnitY;
             Vector3 support(Vector3 d) => Support(d) - volume.Support(-d);
             CollisionSimplex simplex = new CollisionSimplex();
             Vector3 d = Vector3.One;
@@ -47,7 +49,32 @@ namespace SilkyEngine.Sources.Physics.Collisions
             {
                 simplex.Add(support(d));
                 if (simplex.DotWithLast(d) <= 0) return false;
-                if (simplex.ContainsOrigin(ref d)) return true;
+                if (simplex.ContainsOrigin(ref d))
+                {
+                    EPA(simplex, support, out normal);
+                    return true;
+                }
+            }
+        }
+
+
+        private static float EPA_TOLERANCE = 1e-4f;
+        private void EPA(CollisionSimplex simplex, Func<Vector3, Vector3> supportFunc, out Vector3 normal)
+        {
+            while (true)
+            {
+                Plane p = simplex.FindClosestPlane();
+                Vector3 point = supportFunc(p.Normal);
+                double dist = Vector3.Dot(point, p.Normal);
+                if (dist - p.Distance < EPA_TOLERANCE)
+                {
+                    normal = p.Normal;
+                    break;
+                }
+                else
+                {
+                    simplex.Insert(point, p.Triangle);
+                }
             }
         }
     }

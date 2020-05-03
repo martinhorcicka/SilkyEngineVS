@@ -126,6 +126,7 @@ namespace SilkyEngine.Sources.Controls
                     pixels[4 * i + 3] = rgbaSpan[i].A;
                 }
                 cursor.Pixels = pixels;
+                cursorImg.Dispose();
             }
             catch
             {

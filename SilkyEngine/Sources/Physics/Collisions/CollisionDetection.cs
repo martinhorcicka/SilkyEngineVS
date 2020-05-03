@@ -2,6 +2,7 @@
 using SilkyEngine.Sources.Physics;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace SilkyEngine.Sources.Physics.Collisions
@@ -23,20 +24,20 @@ namespace SilkyEngine.Sources.Physics.Collisions
                 {
                     var c1 = collidables[i];
                     var c2 = collidables[j];
-                    if (AreColliding(c1.Item2, c2.Item2))
-                        DispatchCollision(c1.Item1, c2.Item1, deltaTime);
+                    if (AreColliding(c1.Item2, c2.Item2, out Vector3 normal))
+                        DispatchCollision(c1.Item1, c2.Item1, normal, deltaTime);
                 }
         }
 
-        private static bool AreColliding(BoundingVolume v1, BoundingVolume v2)
+        private static bool AreColliding(BoundingVolume v1, BoundingVolume v2, out Vector3 normal)
         {
-            return v1.Overlaps(v2);
+            return v1.Overlaps(v2, out normal);
         }
 
-        private static void DispatchCollision(Entity e1, Entity e2, double deltaTime)
+        private static void DispatchCollision(Entity e1, Entity e2, Vector3 normal, double deltaTime)
         {
-            e1.Collision(new CollisionInfo(e2, deltaTime));
-            e2.Collision(new CollisionInfo(e1, deltaTime));
+            e1.Collision(new CollisionInfo(e2, normal, deltaTime));
+            e2.Collision(new CollisionInfo(e1, -normal, deltaTime));
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SilkyEngine.Sources.Tools
         public static float RadToDeg(float rad) => rad / MathF.PI * 180f;
         public static float DegToRad(float deg) => deg * MathF.PI / 180f;
         public static float AngleBetweenVectors(Vector3 v, Vector3 w) => MathF.Acos(Vector3.Dot(v, w) / (v.Length() * w.Length()));
-       
+
         public static Vector3 MatMul(Matrix4x4 m, Vector3 v)
         {
             Vector3 retVec;
@@ -39,6 +39,29 @@ namespace SilkyEngine.Sources.Tools
         {
             Func<float, float, float> tmpFunc = (x, y) => EMollifier(eps, x, y) * func(x - t, y - s);
             return Integrate2D(tmpFunc);
+        }
+
+        public static Vector3[] GenerateUniformUnitVectors(float angleStep = MathF.PI / 36f)
+        {
+            int numAroundY = (int)(2 * MathF.PI / angleStep);
+            int numBottomToTop = numAroundY / 2 - 1;
+            Vector3[] unitVectors = new Vector3[numAroundY * numBottomToTop + 2];
+            for (int i = 0; i < numAroundY; i++)
+            {
+                for (int j = 1; j < numBottomToTop + 1; j++)
+                {
+                    Vector3 unit;
+                    float theta = i * angleStep, phi = j * angleStep;
+                    unit.X = MathF.Cos(theta) * MathF.Sin(phi);
+                    unit.Y = MathF.Cos(phi);
+                    unit.Z = MathF.Sin(theta) * MathF.Sin(phi);
+                    unitVectors[i * numBottomToTop + j - 1] = unit;
+                }
+            }
+            unitVectors[^2] = -Vector3.UnitY;
+            unitVectors[^1] = Vector3.UnitY;
+
+            return unitVectors;
         }
     }
 }

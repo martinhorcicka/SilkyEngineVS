@@ -135,6 +135,14 @@ namespace SilkyEngine.Sources.Graphics
             }
         }
 
+        public Shader GetShader(ShaderTypes type)
+        {
+            if (!shaders.ContainsKey(type))
+                throw new Exception("A shader of this type is not subscribed to this renderer!");
+
+            return shaders[type];
+        }
+
         private void OnResize(Size newSize)
         {
             gl.Viewport(newSize);

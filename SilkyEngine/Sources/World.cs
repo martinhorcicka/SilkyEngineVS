@@ -72,34 +72,34 @@ namespace SilkyEngine.Sources
 
         private void CreateTerrain(Loader loader)
         {
-            terrain = Generator.HeightMapTerrain(loader, "grass", "png", 1f, GetHeight);
+            terrain = Generator.HeightMapTerrain(loader, "Cartoony/grass", "png", density: 1f, GetHeight);
         }
 
         private void CreateObstacles(Loader loader, params Behavior[] behaviors)
         {
             obstacles = new List<Entity>()
             {
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
-                    newPosition(-5,0,0), Vector3.Zero, 1),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
+                    newPosition(1,0,0), Vector3.Zero, 1),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 3.5f, 4.5f, 0.5f), Vector3.Zero, 1),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 9.5f, 0.0f,-6.0f), Vector3.Zero, 2),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "minecraft_stone", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 7.5f, 0.0f, 9.5f), Vector3.Zero, 3),
 
-                new Obstacle(BoundingBox.Default, behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("diamond", "Colors/red", "jpg"),
                     newPosition(-3.5f, 0.0f, 6.5f), Vector3.Zero, 1, new Vector3(1,0.5f,1)),
 
-                new Obstacle(BoundingBox.Default, behaviors[1], loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
+                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
                     newPosition(-8.5f, 0.0f,-3.5f), Vector3.Zero, 1),
 
-                new Obstacle(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "wood", "jpg"),
+                new Obstacle(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "Cartoony/wood", "jpg"),
                     newPosition(7,8,2), Vector3.Zero, 1, new Vector3(1,0.25f,2)),
-        };
+            };
         }
 
         private void CreateLights(Loader loader, params Behavior[] behaviors)
@@ -137,7 +137,11 @@ namespace SilkyEngine.Sources
             renderer.SubscribeRenderables(obstacles, ShaderTypes.Basic);
             renderer.SubscribeRenderables(terrain, ShaderTypes.Terrain);
             renderer.SubscribeRenderables(lights, ShaderTypes.Light);
-        }
 
+            Shader terrainShader = renderer.GetShader(ShaderTypes.Terrain);
+
+            terrainShader.Bind();
+            terrainShader.UpdateUniform("texScale", 50f);
+        }
     }
 }
