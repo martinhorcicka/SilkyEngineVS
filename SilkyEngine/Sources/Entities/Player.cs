@@ -22,6 +22,7 @@ namespace SilkyEngine.Sources.Entities
         {
             controls.SubscribePlayer(this);
             focus = 0.25f * Vector3.UnitY;
+            Mass = 1f;
         }
 
         public Player(BoundingVolume boundingVolume, IPlayerController controls, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)

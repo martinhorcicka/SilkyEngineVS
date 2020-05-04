@@ -14,14 +14,14 @@ namespace SilkyEngine.Sources.Tools
 {
     public static class Generator
     {
-        public static Entity HeightMapTerrainEntity(int num, Loader loader, string texName, string format, Rectangle area, float density, Func<float, float, float> HeightMap)
+        public static Terrain HeightMapTerrainEntity(int num, Loader loader, string texName, string format, Rectangle area, float density, HeightMap heightMap)
         {
-            string name = HeightMap.ToString() + "Terrain" + num.ToString();
-            TexturedModel model = new TexturedModel(loader.LoadRawModel(name, () => HeightMapTerrainVertices(area, density, HeightMap)), loader.LoadTexture(format, texName));
-            return new Terrain(model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
+            string name = heightMap.ToString() + "Terrain" + num.ToString();
+            TexturedModel model = new TexturedModel(loader.LoadRawModel(name, () => HeightMapTerrainVertices(area, density, heightMap.GetHeight)), loader.LoadTexture(format, texName));
+            return new Terrain(heightMap, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
         }
 
-        public static List<Entity> HeightMapTerrain(Loader loader, string texName, string format, float density, Func<float, float, float> HeightMap)
+        public static List<Terrain> HeightMapTerrain(HeightMap heightMap, Loader loader, string texName, string format, float density)
         {
             Func<Point, Point> inX = p => { ++p.X; return p; }, inY = p => { ++p.Y; return p; };
             int N = 2;
@@ -29,7 +29,7 @@ namespace SilkyEngine.Sources.Tools
             Point p = new Point(-N * stepSize / 2, -N * stepSize / 2);
             Size s = new Size(stepSize, stepSize);
 
-            var terrainPlanes = new List<Entity>(N * N);
+            var terrainPlanes = new List<Terrain>(N * N);
             Point varPoint = p;
             for (int i = 0; i < N; i++)
             {
@@ -38,7 +38,7 @@ namespace SilkyEngine.Sources.Tools
                 {
 
                     terrainPlanes.Add(
-                        HeightMapTerrainEntity(i * N + j, loader, texName, format, new Rectangle(varPoint, s), density, HeightMap)
+                        HeightMapTerrainEntity(i * N + j, loader, texName, format, new Rectangle(varPoint, s), density, heightMap)
                     );
                     varPoint.Y += stepSize;
                 }

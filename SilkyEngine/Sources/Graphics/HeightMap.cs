@@ -36,6 +36,18 @@ namespace SilkyEngine.Sources.Graphics
             return BLerp(x, y);
         }
 
+        public bool TryGetHeight(float x, float y, out float height)
+        {
+            if (!area.Contains(x, y))
+            {
+                height = 0;
+                return false;
+            }
+            ImgCoords(ref x, ref y);
+            height = BLerp(x, y);
+            return true;
+        }
+
         private float BLerp(float x, float y)
         {
             int i = (int)x, j = (int)y;

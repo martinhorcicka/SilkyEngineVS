@@ -85,7 +85,6 @@ namespace SilkyEngine.Sources.Physics.Collisions
             simplex.ContainsOrigin(ref d);
             simplex.Add(support(d));
             d = simplex.ClosestPointToOrigin(Vector3.Zero);
-            int i = 0;
             while (true)
             {
                 d = -d;

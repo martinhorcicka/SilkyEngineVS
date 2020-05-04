@@ -19,8 +19,9 @@ namespace SilkyEngine.Sources
     {
         private Player player;
         private Controller controller;
-        private List<Entity> terrain;
-        private List<Entity> obstacles;
+        private List<Terrain> terrain;
+        private List<Obstacle> obstacles;
+        private List<Movable> movables;
         private List<LightEntity> lights;
         private HeightMap heightMap;
         Func<float, float, float, Vector3> newPosition;
@@ -46,6 +47,7 @@ namespace SilkyEngine.Sources
 
             CreatePlayer(loader);
             CreateTerrain(loader);
+            CreateMovables(loader);
             CreateObstacles(loader, rotation, counterRotation, walkBackAndForth, randomWalkCube);
             CreateLights(loader, rotateArounOrigin, randomWalkLight);
         }
@@ -72,12 +74,12 @@ namespace SilkyEngine.Sources
 
         private void CreateTerrain(Loader loader)
         {
-            terrain = Generator.HeightMapTerrain(loader, "Cartoony/grass", "png", density: 1f, GetHeight);
+            terrain = Generator.HeightMapTerrain(heightMap, loader, "Cartoony/grass", "png", density: 1f);
         }
 
         private void CreateObstacles(Loader loader, params Behavior[] behaviors)
         {
-            obstacles = new List<Entity>()
+            obstacles = new List<Obstacle>()
             {
                 new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition(2,0,-3), Vector3.Zero, 1),
@@ -94,11 +96,16 @@ namespace SilkyEngine.Sources
                 new Obstacle(BoundingBox.Default,  behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
                     newPosition(-3.5f, 0.0f, 6.5f), Vector3.Zero, 1, new Vector3(1,0.5f,1)),
 
-                new Obstacle(BoundingSphere.Default,  Behavior.DoNothing, loader.FromOBJ("sphere", "Colors/yellow", "jpg"),
-                    newPosition(-8.5f, 0.0f,-3.5f), Vector3.Zero, 1),
-
                 new Obstacle(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "Cartoony/wood", "jpg"),
                     newPosition(7,8,2), Vector3.Zero, 1, new Vector3(1,0.25f,2)),
+            };
+        }
+
+        private void CreateMovables(Loader loader)
+        {
+            movables = new List<Movable>() {
+                new Movable(terrain, BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("sphere", "Colors/yellow", "jpg"),
+                            newPosition(-8.5f, 0.0f, -3.5f), Vector3.Zero, 1),
             };
         }
 
@@ -134,6 +141,7 @@ namespace SilkyEngine.Sources
         public void Finish(Renderer renderer)
         {
             renderer.SubscribeRenderable(player, ShaderTypes.Basic);
+            renderer.SubscribeRenderables(movables, ShaderTypes.Basic);
             renderer.SubscribeRenderables(obstacles, ShaderTypes.Basic);
             renderer.SubscribeRenderables(terrain, ShaderTypes.Terrain);
             renderer.SubscribeRenderables(lights, ShaderTypes.Light);

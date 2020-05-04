@@ -60,6 +60,8 @@ namespace SilkyEngine.Sources.Entities
         private Vector3 movedBy = Vector3.Zero;
         public Vector3 MovedBy => movedBy;
 
+        public float Mass { get; set; } = 0;
+
         public virtual void Translate(Vector3 dp)
         {
             movedBy = dp;

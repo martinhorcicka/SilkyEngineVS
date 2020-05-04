@@ -18,21 +18,28 @@ namespace SilkyEngine.Sources.Entities
 
         public override void Collision(CollisionInfo cInfo)
         {
-            if (!(cInfo.Target is Player p)) return;
-            float distance = p.MovementSpeed * (float)cInfo.DeltaTime;
-            Vector3 dPos = cInfo.Normal;
-            if (dPos.Y == 1)
+            if (!(cInfo.Target is Player || cInfo.Target is Movable)) return;
+            if (cInfo.Target is Movable m)
             {
-                p.IsInAir = false;
-                p.VerticalSpeed = 0;
-                dPos.Y = 0;
+                m.Translate(cInfo.Normal * m.CurrentSpeed * (float)cInfo.DeltaTime);
             }
-            else if (dPos.Y == -1)
+            if (cInfo.Target is Player p)
             {
-                p.VerticalSpeed = 0;
-            }
+                float distance = p.MovementSpeed * (float)cInfo.DeltaTime;
+                Vector3 dPos = cInfo.Normal;
+                if (dPos.Y == 1)
+                {
+                    p.IsInAir = false;
+                    p.VerticalSpeed = 0;
+                    dPos.Y = 0;
+                }
+                else if (dPos.Y == -1)
+                {
+                    p.VerticalSpeed = 0;
+                }
 
-            p.Translate(dPos * distance + MovedBy);
+                p.Translate(dPos * distance + MovedBy);
+            }
         }
     }
 }
