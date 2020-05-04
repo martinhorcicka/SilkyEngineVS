@@ -38,7 +38,7 @@ namespace SilkyEngine.Sources.Tools
 
         private static float Integrate2D(Func<float, float, float> func)
         {
-            Func<double, double, double> fnd = (x, y) => func((float)x, (float)y);
+            double fnd(double x, double y) => func((float)x, (float)y);
             double result = GaussLegendreRule.Integrate(fnd, -1, 1, -1, 1, 8);
 
             return (float)result;
@@ -46,7 +46,7 @@ namespace SilkyEngine.Sources.Tools
 
         public static float Mollification(Func<float, float, float> func, float t, float s, float eps)
         {
-            Func<float, float, float> tmpFunc = (x, y) => EMollifier(eps, x, y) * func(x - t, y - s);
+            float tmpFunc(float x, float y) => EMollifier(eps, x, y) * func(x - t, y - s);
             return Integrate2D(tmpFunc);
         }
 

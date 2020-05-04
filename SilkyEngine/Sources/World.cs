@@ -91,10 +91,10 @@ namespace SilkyEngine.Sources
                 new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 7.5f, 0.0f, 9.5f), Vector3.Zero, 3),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("diamond", "Colors/red", "jpg"),
+                new Obstacle(BoundingBox.Default,  behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
                     newPosition(-3.5f, 0.0f, 6.5f), Vector3.Zero, 1, new Vector3(1,0.5f,1)),
 
-                new Obstacle(BoundingSphere.Default, Behavior.DoNothing, loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
+                new Obstacle(BoundingSphere.Default,  Behavior.DoNothing, loader.FromOBJ("sphere", "Colors/yellow", "jpg"),
                     newPosition(-8.5f, 0.0f,-3.5f), Vector3.Zero, 1),
 
                 new Obstacle(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "Cartoony/wood", "jpg"),
