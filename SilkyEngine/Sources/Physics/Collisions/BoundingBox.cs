@@ -14,27 +14,59 @@ namespace SilkyEngine.Sources.Physics.Collisions
 
         private static Vector3[] MakeDefaultVertices()
         {
-            List<Vector3> vertices = new List<Vector3>(27);
+            List<Vector3> vertices = new List<Vector3>(8);
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
                     for (int k = 0; k < 3; k++)
                     {
+                        if (i == 1 || j == 1 || k == 1) continue;
                         vertices.Add(new Vector3(i - 1, j - 1, k - 1));
                     }
                 }
             }
-            vertices.Remove(Vector3.Zero);
 
             return vertices.ToArray();
+        }
+
+        private Vector3[] Vertices;
+
+        public override void Translate(Vector3 dp)
+        {
+            base.Translate(dp);
+            Vertices = GetVertices();
+        }
+        public override void RotateX(float angle)
+        {
+            base.RotateX(angle);
+            Vertices = GetVertices();
+        }
+        public override void RotateY(float angle)
+        {
+            base.RotateY(angle);
+            Vertices = GetVertices();
+        }
+        public override void RotateZ(float angle)
+        {
+            base.RotateZ(angle);
+            Vertices = GetVertices();
+        }
+        public override void SetHeight(float newHeight)
+        {
+            base.SetHeight(newHeight);
+            Vertices = GetVertices();
         }
 
         private BoundingBox(Vector3 center, Vector3 rotation, float sideLength) : this(center, rotation, sideLength * Vector3.One)
         { }
 
         private BoundingBox(Vector3 center, Vector3 rotation, Vector3 dimensions)
-            : base(center, rotation, dimensions) { }
+            : base(center, rotation, dimensions)
+        {
+            DefaultVertices ??= MakeDefaultVertices();
+            Vertices = GetVertices();
+        }
 
         public Vector3[] GetVertices()
         {
@@ -58,9 +90,8 @@ namespace SilkyEngine.Sources.Physics.Collisions
         {
             float highest = float.MinValue;
             Vector3 support = Vector3.Zero;
-            var vertices = GetVertices();
 
-            foreach (var v in vertices)
+            foreach (var v in Vertices)
             {
                 float dot = Vector3.Dot(v, axis);
                 if (dot > highest)
@@ -71,6 +102,11 @@ namespace SilkyEngine.Sources.Physics.Collisions
             }
 
             return support;
+        }
+
+        public override BoundingVolume MakeCore()
+        {
+            return new BoundingBox(center, rotation, scaleFactor * dimensions);
         }
 
         private Matrix4x4 MakeRotationMatrix()

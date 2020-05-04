@@ -80,7 +80,7 @@ namespace SilkyEngine.Sources
             obstacles = new List<Entity>()
             {
                 new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
-                    newPosition(1,0,0), Vector3.Zero, 1),
+                    newPosition(2,0,-3), Vector3.Zero, 1),
 
                 new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 3.5f, 4.5f, 0.5f), Vector3.Zero, 1),
@@ -94,7 +94,7 @@ namespace SilkyEngine.Sources
                 new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("diamond", "Colors/red", "jpg"),
                     newPosition(-3.5f, 0.0f, 6.5f), Vector3.Zero, 1, new Vector3(1,0.5f,1)),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
+                new Obstacle(BoundingSphere.Default, Behavior.DoNothing, loader.FromOBJ("icosahedron", "Colors/yellow", "jpg"),
                     newPosition(-8.5f, 0.0f,-3.5f), Vector3.Zero, 1),
 
                 new Obstacle(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "Cartoony/wood", "jpg"),

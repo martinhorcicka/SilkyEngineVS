@@ -26,6 +26,15 @@ namespace SilkyEngine.Sources.Tools
 
             return retVec;
         }
+        public static Vector3 MatMul(Matrix3x3 m, Vector3 v)
+        {
+            Vector3 retVec;
+            retVec.X = m[0, 0] * v.X + m[0, 1] * v.Y + m[0, 2] * v.Z;
+            retVec.Y = m[1, 0] * v.X + m[1, 1] * v.Y + m[1, 2] * v.Z;
+            retVec.Z = m[2, 0] * v.X + m[2, 1] * v.Y + m[2, 2] * v.Z;
+
+            return retVec;
+        }
 
         private static float Integrate2D(Func<float, float, float> func)
         {

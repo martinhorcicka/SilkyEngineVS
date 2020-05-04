@@ -71,7 +71,12 @@ namespace SilkyEngine.Sources
 
         private void OnClose()
         {
-            System.Console.WriteLine("Closing..");
+            window.Load -= OnLoad;
+            window.Render -= OnRender;
+            window.Update -= OnUpdate;
+            window.Update -= CollisionDetection.OnUpdate;
+            window.Closing -= OnClose;
+            Console.WriteLine("Closing..");
             loader.Dispose();
         }
 

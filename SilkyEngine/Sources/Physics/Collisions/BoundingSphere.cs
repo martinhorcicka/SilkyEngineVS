@@ -30,5 +30,10 @@ namespace SilkyEngine.Sources.Physics.Collisions
         {
             return Vector3.Normalize(d) * dimensions + center;
         }
+
+        public override BoundingVolume MakeCore()
+        {
+            return new BoundingSphere(center, rotation, scaleFactor * dimensions);
+        }
     }
 }
