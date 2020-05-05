@@ -22,9 +22,9 @@ namespace SilkyEngine.Sources.Controls
         protected static MouseButton[] mouseButtons = new MouseButton[] { MouseButton.Left, MouseButton.Right };
         protected static Dictionary<Key, bool> isPressed = new Dictionary<Key, bool>(controlKeys.Length);
         protected static Dictionary<MouseButton, bool> isMBPressed = new Dictionary<MouseButton, bool>(mouseButtons.Length);
-        protected float movementSpeed, mouseSensitivity;
+        protected float mouseSensitivity;
 
-        public Controller(IWindow window, float movementSpeed = 10f, float mouseSensitivity = 0.002f) : base(window)
+        public Controller(IWindow window, float mouseSensitivity = 0.002f) : base(window)
         {
             this.window = window;
 
@@ -36,6 +36,8 @@ namespace SilkyEngine.Sources.Controls
 
             var input = window.CreateInput();
             var mouse = input.Mice[0];
+            mouse.Cursor.CursorMode = CursorMode.Normal;
+
             CreateCursor("Resources/Textures/arrow.png", mouse.Cursor);
             mouse.MouseMove += OnMouseMove;
             mouse.MouseDown += OnMouseDown;
@@ -48,7 +50,6 @@ namespace SilkyEngine.Sources.Controls
                 kb.KeyUp += OnKeyUp;
             }
 
-            this.movementSpeed = movementSpeed;
             this.mouseSensitivity = mouseSensitivity;
         }
 

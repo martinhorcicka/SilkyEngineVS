@@ -7,6 +7,7 @@ using SilkyEngine.Sources.Graphics.Structs;
 using SilkyEngine.Sources.Interfaces;
 using SilkyEngine.Sources.Physics.Collisions;
 using SilkyEngine.Sources.Tools;
+using SilkyEngine.Sources.Zones;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,6 +20,7 @@ namespace SilkyEngine.Sources
     {
         private Player player;
         private Controller controller;
+        private HomeZone homeZone;
         private List<Terrain> terrain;
         private List<Obstacle> obstacles;
         private List<Movable> movables;
@@ -27,16 +29,20 @@ namespace SilkyEngine.Sources
         Func<float, float, float, Vector3> newPosition;
         private RectangleF walkableArea;
 
+        private event Action<double> Update;
+
         public World(IWindow window, Loader loader)
         {
+            window.Update += OnUpdate;
+
             controller = new ThirdPersonControls(window);
-            ((ThirdPersonControls)controller).SubscribeWorld(this);
-            ((ThirdPersonControls)controller).SubscribeHeightMap(GetHeight);
 
             walkableArea = new RectangleF(-100, -100, 200, 200);
 
-            heightMap = new HeightMap("ltm_heightmap.png", walkableArea, 0, 20);
+            heightMap = new HeightMap("trebusin_area.png", walkableArea, 0, 50);
             newPosition = (x, y, z) => new Vector3(x, y + GetHeight(x, z), z);
+
+            homeZone = new HomeZone(new RectangleF(-10, -10, 20, 20));
 
             var rotation = new BRotateAroundY(window, speed: 2);
             var counterRotation = new BRotateAroundY(window, speed: -5);
@@ -45,11 +51,25 @@ namespace SilkyEngine.Sources
             var randomWalkCube = new BRandomWalk(window, sleepTime: 2, walkingSpeed: 5, GetHeight);
             var walkBackAndForth = new BWalkBackAndForth(window, speed: 2, offset: 4 * Vector3.UnitX);
 
-            CreatePlayer(loader);
             CreateTerrain(loader);
             CreateMovables(loader);
+            CreatePlayer(loader);
             CreateObstacles(loader, rotation, counterRotation, walkBackAndForth, randomWalkCube);
             CreateLights(loader, rotateArounOrigin, randomWalkLight);
+
+            foreach (var m in movables)
+            {
+                Update += m.OnUpdate;
+            }
+        }
+
+        private void OnUpdate(double deltaTime)
+        {
+            Update?.Invoke(deltaTime);
+            if (homeZone.IsInside(player))
+                Console.WriteLine("Player is home!");
+            else
+                Console.WriteLine("Player is away!");
         }
 
         public bool IsWalkable(Vector3 position)
@@ -63,13 +83,16 @@ namespace SilkyEngine.Sources
 
         public ICameraController Controller => (ICameraController)controller;
 
-        private float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
+        public float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
 
         private void CreatePlayer(Loader loader)
         {
-            player = new Player(BoundingBox.Default, (IPlayerController)controller,
+            player = new Player(this, BoundingBox.Default, (IPlayerController)controller,
                 loader.FromOBJ("capsule", "Colors/blue", "jpg"),
                 newPosition(0, 0, 0), Vector3.Zero, 1f, new Vector3(1, 2, 1) * 0.5f);
+
+            if (movables == null) movables = new List<Movable>();
+            movables.Add(player);
         }
 
         private void CreateTerrain(Loader loader)
@@ -103,10 +126,17 @@ namespace SilkyEngine.Sources
 
         private void CreateMovables(Loader loader)
         {
-            movables = new List<Movable>() {
-                new Movable(terrain, BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("sphere", "Colors/yellow", "jpg"),
+            var newMovables = new List<Movable>() {
+                new Movable(this, BoundingSphere.Default, Behavior.DoNothing, loader.FromOBJ("sphere", "Colors/yellow", "jpg"),
                             newPosition(-8.5f, 0.0f, -3.5f), Vector3.Zero, 1),
+                new Movable(this, BoundingSphere.Default, Behavior.DoNothing, loader.FromOBJ("sphere", "Colors/red", "jpg"),
+                            newPosition(0, 15, 2f), Vector3.Zero, 1),
+                new Movable(this, BoundingSphere.Default, Behavior.DoNothing, loader.FromOBJ("sphere", "Colors/blue", "jpg"),
+                            newPosition(4f, 20,-3f), Vector3.Zero, 1),
             };
+
+            if (movables == null) movables = new List<Movable>();
+            movables.AddRange(newMovables);
         }
 
         private void CreateLights(Loader loader, params Behavior[] behaviors)

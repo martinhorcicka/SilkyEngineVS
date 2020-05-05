@@ -40,7 +40,7 @@ namespace SilkyEngine.Sources.Entities
 
         public Vector3 Center => texturedModel.Center * scale + position;
 
-        public void SetHeight(float newHeight)
+        public virtual void SetHeight(float newHeight)
         {
             movedBy += (newHeight - position.Y) * Vector3.UnitY;
             boundingVolume.SetHeight(newHeight + texturedModel.Center.Y * scale);

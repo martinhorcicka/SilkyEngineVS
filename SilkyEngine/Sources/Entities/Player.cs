@@ -7,39 +7,45 @@ using SilkyEngine.Sources.Physics.Collisions;
 
 namespace SilkyEngine.Sources.Entities
 {
-    public class Player : Entity
+    public class Player : Movable
     {
         public event Action<Vector3> Move;
+        public event Action<float> HeightSet;
 
         public float MovementSpeed => 10f;
-        public float VerticalSpeed { get; set; } = 0;
-        public bool IsInAir { get; set; } = true;
         public bool Collided { get; set; }
+        public override float CurrentSpeed { get => MathF.Max(MovementSpeed, MathF.Abs(VerticalSpeed)); set => base.CurrentSpeed = value; }
 
         private Vector3 focus;
-        public Player(BoundingVolume boundingVolume, IPlayerController controls, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
-            : base(boundingVolume, (Behavior)controls, texturedModel, position, rotation, scale, dimensions)
+        public Player(World world, BoundingVolume boundingVolume, IPlayerController controls, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
+            : base(world, boundingVolume, (Behavior)controls, texturedModel, position, rotation, scale, dimensions)
         {
             controls.SubscribePlayer(this);
             focus = 0.25f * Vector3.UnitY;
             Mass = 1f;
         }
 
-        public Player(BoundingVolume boundingVolume, IPlayerController controls, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
-            : this(boundingVolume, controls, texturedModel, position, rotation, scale, scale * Vector3.One)
+        public Player(World world, BoundingVolume boundingVolume, IPlayerController controls, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
+            : this(world, boundingVolume, controls, texturedModel, position, rotation, scale, scale * Vector3.One)
         { }
 
         public Vector3 Focus => Center + focus;
         public Vector3 Right => Vector3.Cross(Front, Up);
         public float JumpPower => 10f;
-        public float Thickness => 0.5f;
 
         public override void Translate(Vector3 dp)
         {
-            base.Translate(dp);
+            if (!world.IsWalkable(position + dp)) return;
+
             Move?.Invoke(dp);
+            base.Translate(dp);
         }
 
+        public override void SetHeight(float newHeight)
+        {
+            HeightSet?.Invoke(newHeight);
+            base.SetHeight(newHeight);
+        }
         public Vector3 Front
         {
             get
@@ -60,9 +66,29 @@ namespace SilkyEngine.Sources.Entities
             RotateY(angle);
         }
 
+        public override void OnUpdate(double deltaTime)
+        {
+            base.OnUpdate(deltaTime);
+
+            Collided = false;
+        }
+
         public override void Collision(CollisionInfo cInfo)
         {
             Collided = true;
+            if (Vector3.Dot(cInfo.Normal, Vector3.UnitY) < 0)
+            {
+                VerticalSpeed = 0;
+                IsOnGround = true;
+            }
+        }
+
+        public void Jump()
+        {
+            if (!IsOnGround) return;
+            IsOnGround = false;
+            Translate(0.1f * Vector3.UnitY);
+            VerticalSpeed = JumpPower;
         }
     }
 }

@@ -13,10 +13,12 @@ namespace SilkyEngine.Sources.Controls
     {
         private Vector2 prevMousePos;
         private Camera camera;
+        private float movementSpeed;
 
-        public FreeCameraControls(IWindow window) : base(window)
+        public FreeCameraControls(IWindow window, float movementSpeed = 10f) : base(window)
         {
             window.CreateInput().Mice[0].Cursor.CursorMode = CursorMode.Disabled;
+            this.movementSpeed = movementSpeed;
         }
 
         public void SubscribeCamera(Camera camera) => this.camera = camera;

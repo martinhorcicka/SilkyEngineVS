@@ -1,4 +1,5 @@
-﻿using SilkyEngine.Sources.Behaviors;
+﻿using MathNet.Numerics.Optimization.LineSearch;
+using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
 using System;
@@ -10,62 +11,62 @@ namespace SilkyEngine.Sources.Entities
 {
     public class Movable : Entity
     {
-        public float CurrentSpeed { get; private set; }
-        public bool IsInAir { get; private set; }
-        public float VerticalSpeed { get; private set; }
-        private const float gravity = 20f;
+        public virtual float CurrentSpeed { get; set; }
+        public float VerticalSpeed { get; set; } = 0;
+        public float RelMass { get; set; }
+        public bool IsOnGround { get; protected set; }
+        protected float Gravity { get; } = 20f;
 
-        protected List<Terrain> terrains;
 
-        public Movable(List<Terrain> terrains, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
-            : this(terrains, boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
+        protected World world;
+
+        public Movable(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
+            : this(world, boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
         {
         }
 
-        public Movable(List<Terrain> terrains, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
+        public Movable(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
             : base(boundingVolume, behavior, texturedModel, position, rotation, scale, dimensions)
         {
-            this.terrains = terrains;
+            this.world = world;
             Mass = 1f;
+        }
+
+        public virtual void OnUpdate(double deltaTime)
+        {
+            Translate(Vector3.UnitY * VerticalSpeed * (float)deltaTime);
+            VerticalSpeed -= Gravity * (float)deltaTime;
+
+            float terraintHeight = world.GetHeight(Position.X, Position.Z);
+            if (Position.Y < terraintHeight)
+            {
+                IsOnGround = true;
+                VerticalSpeed = 0;
+                SetHeight(terraintHeight);
+            }
         }
 
         public override void Collision(CollisionInfo cInfo)
         {
-            if (!(cInfo.Target is Player p)) return;
-
-            IsInAir = true;
-            float deltaTime = (float)cInfo.DeltaTime;
-            float distance = p.MovementSpeed * deltaTime;
-            Vector3 dPos = cInfo.Normal;
-            float massFrac = Mass / (Mass + p.Mass);
-
-            if (IsInAir)
+            if (!(cInfo.Target is Player || cInfo.Target is Movable)) return;
+            if (cInfo.Target is Movable m)
             {
-                VerticalSpeed -= gravity * deltaTime;
-                Translate(Vector3.UnitY * VerticalSpeed * deltaTime);
+                m.Translate(cInfo.Normal * m.CurrentSpeed * (float)cInfo.DeltaTime);
+                RelMass = Mass + m.RelMass;
             }
-
-            float terraintHeight = GetHeightFromTerrains();
-            if (position.Y < terraintHeight)
+            if (cInfo.Target is Player p)
             {
-                IsInAir = false;
-                VerticalSpeed = 0;
-                SetHeight(terraintHeight);
-            }
 
-            p.Translate(dPos * distance * massFrac);
-            Translate(-dPos * distance * (1 - massFrac));
-            CurrentSpeed = MovedBy.Length() / deltaTime;
-        }
+                float deltaTime = (float)cInfo.DeltaTime;
+                float distance = p.MovementSpeed * deltaTime;
+                Vector3 dPos = cInfo.Normal;
+                float massFrac = RelMass / (RelMass + p.Mass);
 
-        private float GetHeightFromTerrains()
-        {
-            foreach (var t in terrains)
-            {
-                if (t.TryGetHeigt(position.X, position.Z, out float height))
-                    return height;
+                p.Translate(dPos * distance * massFrac);
+                Translate(-dPos * distance * (1 - massFrac));
+                CurrentSpeed = MovedBy.Length() / deltaTime;
+                RelMass = Mass;
             }
-            return 0;
         }
     }
 }

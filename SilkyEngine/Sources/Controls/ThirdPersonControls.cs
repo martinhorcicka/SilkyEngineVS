@@ -15,18 +15,14 @@ namespace SilkyEngine.Sources.Controls
     {
         private Camera camera;
         private Player player;
-        private World world;
-        private Func<float, float, float> HeightMap;
         private const float MIN_DISTANCE = 1;
         private const float MAX_DISTANCE = 25;
         private const float DEFAULT_HEIGHT = 5;
         private Vector2 prevMousePos;
         private float distance;
-        private const float gravity = 20f;
 
         public ThirdPersonControls(IWindow window) : base(window)
         {
-            window.CreateInput().Mice[0].Cursor.CursorMode = CursorMode.Normal;
             distance = Computation.Average(MIN_DISTANCE, MAX_DISTANCE);
         }
 
@@ -36,7 +32,6 @@ namespace SilkyEngine.Sources.Controls
             mouse.Cursor.CursorMode = CursorMode.Disabled;
             if (isMBPressed[MouseButton.Right])
                 player.SnapToFront(camera.Front);
-
         }
 
         protected override void OnMouseUp(IMouse mouse, MouseButton button)
@@ -79,9 +74,6 @@ namespace SilkyEngine.Sources.Controls
 
         protected override void OnUpdate(double deltaTime)
         {
-            if (!player.Collided) player.IsInAir = true;
-            float distance = movementSpeed * (float)deltaTime;
-
             Vector3 dPos = Vector3.Zero;
             if (isPressed[Key.W])
                 dPos += player.Front;
@@ -91,28 +83,10 @@ namespace SilkyEngine.Sources.Controls
                 dPos -= player.Right;
             if (isPressed[Key.D])
                 dPos += player.Right;
-            dPos = Vector3.Normalize(dPos);
+            dPos = (dPos != Vector3.Zero) ? Vector3.Normalize(dPos) : Vector3.Zero;
 
-            if (world.IsWalkable(player.Position + dPos))
-            {
-                Translate(dPos * distance);
-            }
-
-            if (player.IsInAir)
-            {
-                player.VerticalSpeed -= gravity * (float)deltaTime;
-                Translate(Vector3.UnitY * player.VerticalSpeed * (float)deltaTime);
-            }
-
-            float terraintHeight = HeightMap?.Invoke(player.Position.X, player.Position.Z) ?? 0f;
-            if (player.Position.Y < terraintHeight)
-            {
-                player.IsInAir = false;
-                player.VerticalSpeed = 0;
-                SetHeight(terraintHeight);
-            }
-
-            player.Collided = false;
+            float distance = player.MovementSpeed * (float)deltaTime;
+            player.Translate(dPos * distance);
         }
 
         protected override void OnKeyDown(IKeyboard keyboard, Key key, int mode)
@@ -121,7 +95,7 @@ namespace SilkyEngine.Sources.Controls
             switch (key)
             {
                 case Key.Space:
-                    if (!player.IsInAir) Jump();
+                    player.Jump();
                     break;
                 default:
                     break;
@@ -136,23 +110,9 @@ namespace SilkyEngine.Sources.Controls
             RecalculateCamera(0, 0);
         }
 
-        private void Jump()
-        {
-            player.IsInAir = true;
-            player.VerticalSpeed = player.JumpPower;
-            Translate(0.1f * Vector3.UnitY);
-        }
-
-        private void Translate(Vector3 dp, Player p = null)
-        {
-            p ??= player;
-            p.Translate(dp);
-        }
-
-        private void SetHeight(float newHeight)
+        private void OnHeightSet(float newHeight)
         {
             float dHeight = camera.Position.Y - player.Position.Y;
-            player.SetHeight(newHeight);
             camera.SetHeight(newHeight + dHeight);
         }
 
@@ -165,7 +125,7 @@ namespace SilkyEngine.Sources.Controls
         {
             this.player = player;
             this.player.Move += OnPlayerMove;
-            this.movementSpeed = player.MovementSpeed;
+            this.player.HeightSet += OnHeightSet;
         }
 
         public void SubscribeCamera(Camera camera)
@@ -176,9 +136,5 @@ namespace SilkyEngine.Sources.Controls
             camera.Position = relCamPos + player.Focus;
             camera.Front = player.Focus - camera.Position;
         }
-
-        public void SubscribeWorld(World world) => this.world = world;
-
-        public void SubscribeHeightMap(Func<float, float, float> HeightMap) => this.HeightMap = HeightMap;
     }
 }
