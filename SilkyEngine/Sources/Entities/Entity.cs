@@ -9,6 +9,7 @@ namespace SilkyEngine.Sources.Entities
     public abstract class Entity
     {
         public static Entity Empty = null;
+        protected World world;
         protected BoundingVolume boundingVolume;
         protected TexturedModel texturedModel;
         protected Vector3 position;
@@ -16,8 +17,9 @@ namespace SilkyEngine.Sources.Entities
         protected Vector3 dimensions;
         protected float scale;
 
-        public Entity(BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
+        public Entity(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
         {
+            this.world = world;
             this.texturedModel = texturedModel;
             this.position = position;
             this.rotation = rotation;
@@ -32,8 +34,8 @@ namespace SilkyEngine.Sources.Entities
             else this.boundingVolume = boundingVolume.FromEntity(this);
 
         }
-        public Entity(BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
-            : this(boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
+        public Entity(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
+            : this(world, boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
         { }
 
         public TexturedModel TexturedModel => texturedModel;
@@ -64,6 +66,7 @@ namespace SilkyEngine.Sources.Entities
 
         public virtual void Translate(Vector3 dp)
         {
+            world.EntityMoved(this);
             movedBy = dp;
             boundingVolume.Translate(dp);
             position += dp;

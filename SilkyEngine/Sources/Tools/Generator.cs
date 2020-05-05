@@ -14,14 +14,14 @@ namespace SilkyEngine.Sources.Tools
 {
     public static class Generator
     {
-        public static Terrain HeightMapTerrainEntity(int num, Loader loader, string texName, string format, Rectangle area, float density, HeightMap heightMap)
+        public static Terrain HeightMapTerrainEntity(int num, Loader loader, string texName, string format, Rectangle area, float density, HeightMap heightMap, World world)
         {
             string name = heightMap.ToString() + "Terrain" + num.ToString();
             TexturedModel model = new TexturedModel(loader.LoadRawModel(name, () => HeightMapTerrainVertices(area, density, heightMap.GetHeight)), loader.LoadTexture(format, texName));
-            return new Terrain(heightMap, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
+            return new Terrain(world, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
         }
 
-        public static List<Terrain> HeightMapTerrain(HeightMap heightMap, Loader loader, string texName, string format, float density)
+        public static List<Terrain> HeightMapTerrain(World world, HeightMap heightMap, Loader loader, string texName, string format, float density)
         {
             Func<Point, Point> inX = p => { ++p.X; return p; }, inY = p => { ++p.Y; return p; };
             int N = 2;
@@ -38,7 +38,7 @@ namespace SilkyEngine.Sources.Tools
                 {
 
                     terrainPlanes.Add(
-                        HeightMapTerrainEntity(i * N + j, loader, texName, format, new Rectangle(varPoint, s), density, heightMap)
+                        HeightMapTerrainEntity(i * N + j, loader, texName, format, new Rectangle(varPoint, s), density, heightMap, world)
                     );
                     varPoint.Y += stepSize;
                 }

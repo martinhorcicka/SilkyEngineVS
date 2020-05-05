@@ -12,8 +12,8 @@ namespace SilkyEngine.Sources.Entities
         public event Action LightMoved;
         private LightStruct lightStruct;
 
-        public LightEntity(BoundingVolume boundingVolume, Behavior behavior, LightStruct lightStruct, TexturedModel texturedModel, float scale)
-            : base(boundingVolume, behavior, texturedModel, lightStruct.Position, Vector3.Zero, scale)
+        public LightEntity(World world, BoundingVolume boundingVolume, Behavior behavior, LightStruct lightStruct, TexturedModel texturedModel, float scale)
+            : base(world, boundingVolume, behavior, texturedModel, lightStruct.Position, Vector3.Zero, scale)
         {
             this.lightStruct = lightStruct;
         }

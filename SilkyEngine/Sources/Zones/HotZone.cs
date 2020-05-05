@@ -2,15 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using System.Text;
 
 namespace SilkyEngine.Sources.Zones
 {
-    public class HomeZone : Zone
+    public class HotZone : ActiveZone
     {
         private RectangleF area;
 
-        public HomeZone(RectangleF area)
+        public HotZone(RectangleF area)
         {
             this.area = area;
         }
@@ -20,9 +21,12 @@ namespace SilkyEngine.Sources.Zones
             return area.Contains(x, z);
         }
 
-        public bool IsInside(Entity e)
+        protected override void UpdateMethod(double deltaTime)
         {
-            return IsInside(e.Position.X, e.Position.Z);
+            foreach (var e in entities)
+            {
+                e.Translate(Vector3.UnitY * (float)deltaTime * 5);
+            }
         }
     }
 }

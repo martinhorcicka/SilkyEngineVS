@@ -20,7 +20,7 @@ namespace SilkyEngine.Sources
     {
         private Player player;
         private Controller controller;
-        private HomeZone homeZone;
+        private List<ActiveZone> activeZones;
         private List<Terrain> terrain;
         private List<Obstacle> obstacles;
         private List<Movable> movables;
@@ -30,6 +30,8 @@ namespace SilkyEngine.Sources
         private RectangleF walkableArea;
 
         private event Action<double> Update;
+
+        private List<Entity> movedEntities = new List<Entity>();
 
         public World(IWindow window, Loader loader)
         {
@@ -42,7 +44,7 @@ namespace SilkyEngine.Sources
             heightMap = new HeightMap("trebusin_area.png", walkableArea, 0, 50);
             newPosition = (x, y, z) => new Vector3(x, y + GetHeight(x, z), z);
 
-            homeZone = new HomeZone(new RectangleF(-10, -10, 20, 20));
+            activeZones = new List<ActiveZone>() { new HotZone(new RectangleF(-10, -10, 20, 20)) };
 
             var rotation = new BRotateAroundY(window, speed: 2);
             var counterRotation = new BRotateAroundY(window, speed: -5);
@@ -61,15 +63,34 @@ namespace SilkyEngine.Sources
             {
                 Update += m.OnUpdate;
             }
+
+            foreach (var az in activeZones)
+            {
+                Update += az.OnUpdate;
+            }
         }
 
         private void OnUpdate(double deltaTime)
         {
             Update?.Invoke(deltaTime);
-            if (homeZone.IsInside(player))
-                Console.WriteLine("Player is home!");
-            else
-                Console.WriteLine("Player is away!");
+            foreach (var me in movedEntities)
+            {
+                foreach (var az in activeZones)
+                {
+                    if (az.IsInside(me))
+                    {
+                        az.AddEntity(me);
+                        break;
+                    }
+                }
+            }
+            movedEntities.Clear();
+        }
+
+        public void EntityMoved(Entity entity)
+        {
+            if (!movedEntities.Contains(entity))
+                movedEntities.Add(entity);
         }
 
         public bool IsWalkable(Vector3 position)
@@ -97,29 +118,29 @@ namespace SilkyEngine.Sources
 
         private void CreateTerrain(Loader loader)
         {
-            terrain = Generator.HeightMapTerrain(heightMap, loader, "Cartoony/grass", "png", density: 1f);
+            terrain = Generator.HeightMapTerrain(this, heightMap, loader, "Cartoony/grass", "png", density: 1f);
         }
 
         private void CreateObstacles(Loader loader, params Behavior[] behaviors)
         {
             obstacles = new List<Obstacle>()
             {
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
+                new Obstacle(this, BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition(2,0,-3), Vector3.Zero, 1),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
+                new Obstacle(this, BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 3.5f, 4.5f, 0.5f), Vector3.Zero, 1),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
+                new Obstacle(this, BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 9.5f, 0.0f,-6.0f), Vector3.Zero, 2),
 
-                new Obstacle(BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
+                new Obstacle(this, BoundingBox.Default, Behavior.DoNothing, loader.FromOBJ("cube", "Cartoony/stone", "jpg"),
                     newPosition( 7.5f, 0.0f, 9.5f), Vector3.Zero, 3),
 
-                new Obstacle(BoundingBox.Default,  behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
+                new Obstacle(this, BoundingBox.Default,  behaviors[0], loader.FromOBJ("diamond", "Colors/red", "jpg"),
                     newPosition(-3.5f, 0.0f, 6.5f), Vector3.Zero, 1, new Vector3(1,0.5f,1)),
 
-                new Obstacle(BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "Cartoony/wood", "jpg"),
+                new Obstacle(this, BoundingBox.Default, behaviors[2], loader.FromOBJ("platform", "Cartoony/wood", "jpg"),
                     newPosition(7,8,2), Vector3.Zero, 1, new Vector3(1,0.25f,2)),
             };
         }
@@ -162,9 +183,9 @@ namespace SilkyEngine.Sources
 
             lights = new List<LightEntity>()
             {
-                new LightEntity(BoundingSphere.None, Behavior.DoNothing, light, lightModel, 10f),
-                new LightEntity(BoundingSphere.None, behaviors[1], light2, lightModel, 0.2f),
-                new LightEntity(BoundingSphere.None, behaviors[0], light3, lightModel, 0.15f),
+                new LightEntity(this, BoundingSphere.None, Behavior.DoNothing, light, lightModel, 10f),
+                new LightEntity(this, BoundingSphere.None, behaviors[1], light2, lightModel, 0.2f),
+                new LightEntity(this, BoundingSphere.None, behaviors[0], light3, lightModel, 0.15f),
             };
         }
 

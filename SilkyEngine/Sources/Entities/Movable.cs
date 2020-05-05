@@ -17,16 +17,13 @@ namespace SilkyEngine.Sources.Entities
         public bool IsOnGround { get; protected set; }
         protected float Gravity { get; } = 20f;
 
-
-        protected World world;
-
         public Movable(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
             : this(world, boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
         {
         }
 
         public Movable(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
-            : base(boundingVolume, behavior, texturedModel, position, rotation, scale, dimensions)
+            : base(world, boundingVolume, behavior, texturedModel, position, rotation, scale, dimensions)
         {
             this.world = world;
             Mass = 1f;
