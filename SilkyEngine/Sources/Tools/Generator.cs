@@ -14,11 +14,11 @@ namespace SilkyEngine.Sources.Tools
 {
     public static class Generator
     {
-        public static Terrain HeightMapTerrainEntity(int num, Loader loader, string texName, string format, Rectangle area, float density, HeightMap heightMap, World world)
+        public static Terrain HeightMapTerrainEntity(int num, Loader loader, string texName, string format, RectangleF area, float density, HeightMap heightMap, World world)
         {
             string name = heightMap.ToString() + "Terrain" + num.ToString();
             TexturedModel model = new TexturedModel(loader.LoadRawModel(name, () => HeightMapTerrainVertices(area, density, heightMap.GetHeight)), loader.LoadTexture(format, texName));
-            return new Terrain(world, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
+            return new Terrain(area, world, model, new Vector3(area.Location.X, 0, area.Location.Y), Vector3.Zero, 1f);
         }
 
         public static List<Terrain> HeightMapTerrain(World world, HeightMap heightMap, Loader loader, string texName, string format, float density)
@@ -38,7 +38,7 @@ namespace SilkyEngine.Sources.Tools
                 {
 
                     terrainPlanes.Add(
-                        HeightMapTerrainEntity(i * N + j, loader, texName, format, new Rectangle(varPoint, s), density, heightMap, world)
+                        HeightMapTerrainEntity(i * N + j, loader, texName, format, new RectangleF(varPoint, s), density, heightMap, world)
                     );
                     varPoint.Y += stepSize;
                 }
@@ -47,7 +47,7 @@ namespace SilkyEngine.Sources.Tools
 
             return terrainPlanes;
         }
-        private static Vertex[] HeightMapTerrainVertices(Rectangle area, float density, Func<float, float, float> HeightMap)
+        private static Vertex[] HeightMapTerrainVertices(RectangleF area, float density, Func<float, float, float> HeightMap)
         {
             int numX = (int)(density * area.Width);
             int numZ = (int)(density * area.Height);
