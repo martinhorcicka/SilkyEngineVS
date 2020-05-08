@@ -2,20 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection.Metadata;
 using System.Text;
 
 namespace SilkyEngine.Sources.Physics.Collisions
 {
-    public class CollisionInfo
+    public class EntityCollisionInfo
     {
-        public CollisionInfo(Entity target, Vector3 normal)
-        {
-            Target = target;
-            Normal = normal;
-        }
-
-        public Entity Target { get; }
+        public Entity Entity { get; }
         public Vector3 Normal { get; }
 
+        public EntityCollisionInfo(Entity entity, Vector3 normal)
+        {
+            Entity = entity;
+            Normal = normal;
+        }
     }
 }

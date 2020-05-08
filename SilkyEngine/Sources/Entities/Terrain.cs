@@ -1,6 +1,7 @@
 ﻿using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace SilkyEngine.Sources.Entities
@@ -16,7 +17,10 @@ namespace SilkyEngine.Sources.Entities
         {
         }
 
-        public override void Collision(CollisionInfo cInfo)
+        public float GetHeight(Vector3 position) => world.GetHeight(position);
+        public float GetHeight(float x, float y) => world.GetHeight(x, y);
+
+        public override void Collision(List<EntityCollisionInfo> collisionInfos)
         { }
     }
 }

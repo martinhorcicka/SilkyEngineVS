@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
@@ -76,6 +77,6 @@ namespace SilkyEngine.Sources.Entities
 
         public virtual void RotateAroundAxis(Vector3 axis, float angle) => rotation += axis * angle;
 
-        public abstract void Collision(CollisionInfo cInfo);
+        public abstract void Collision(List<EntityCollisionInfo> cInfos);
     }
 }

@@ -13,13 +13,11 @@ namespace SilkyEngine.Sources.Behaviors
         float sleepTime = 2;
         float walkingSpeed = 4;
         Vector2 currentDirection;
-        private Func<float, float, float> heightMap;
 
-        public BRandomWalk(IWindow window, float sleepTime = 2, float walkingSpeed = 4, Func<float, float, float> heightMap = null) : base(window)
+        public BRandomWalk(IWindow window, float sleepTime = 2, float walkingSpeed = 4) : base(window)
         {
             this.sleepTime = sleepTime;
             this.walkingSpeed = walkingSpeed;
-            this.heightMap = heightMap;
 
             sleepTimer = 0;
         }
@@ -44,9 +42,7 @@ namespace SilkyEngine.Sources.Behaviors
                 Vector3 dPos = new Vector3(currentDirection.X, 0, currentDirection.Y);
                 foreach (var e in entities)
                 {
-                    var prevHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
                     e.DeltaPosition += dPos * speed;
-                    var currentHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
                 }
                 walkTimer -= (float)deltaTime;
             }

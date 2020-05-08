@@ -11,22 +11,19 @@ namespace SilkyEngine.Sources.Behaviors
         private Vector3 point;
         private Vector3 axis;
         private float speed;
-        private Func<float, float, float> heightMap;
 
-        public BRotateAround(IWindow window, Vector3 point, Vector3 axis, float speed, Func<float, float, float> heightMap = null)
+        public BRotateAround(IWindow window, Vector3 point, Vector3 axis, float speed)
             : base(window)
         {
             this.point = point;
             this.axis = axis;
             this.speed = speed;
-            this.heightMap = heightMap;
         }
 
         public override void OnUpdate(double deltaTime)
         {
             foreach (var e in entities)
             {
-                var prevHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
                 RotateEntity(e, speed * (float)deltaTime);
             }
         }

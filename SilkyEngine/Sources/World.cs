@@ -48,9 +48,9 @@ namespace SilkyEngine.Sources
 
             var rotation = new BRotateAroundY(window, speed: 2);
             var counterRotation = new BRotateAroundY(window, speed: -5);
-            var rotateArounOrigin = new BRotateAround(window, point: Vector3.Zero, axis: Vector3.UnitY, 1, heightMap: GetHeight);
-            var randomWalkLight = new BRandomWalk(window, sleepTime: 2, walkingSpeed: 4, heightMap: GetHeight);
-            var randomWalkCube = new BRandomWalk(window, sleepTime: 2, walkingSpeed: 5, GetHeight);
+            var rotateArounOrigin = new BRotateAround(window, point: Vector3.Zero, axis: Vector3.UnitY, speed: 1);
+            var randomWalkLight = new BRandomWalk(window, sleepTime: 2, walkingSpeed: 4);
+            var randomWalkCube = new BRandomWalk(window, sleepTime: 2, walkingSpeed: 5);
             var walkBackAndForth = new BWalkBackAndForth(window, speed: 2, offset: 4 * Vector3.UnitX);
 
             CreateTerrain(loader);
@@ -59,12 +59,21 @@ namespace SilkyEngine.Sources
             CreateObstacles(loader, rotation, counterRotation, walkBackAndForth, randomWalkCube);
             CreateLights(loader, rotateArounOrigin, randomWalkLight);
 
+            CollisionDetection.AddTerrain(terrain);
+
             movables[0].Mass = 3f;
+
+            foreach (var l in lights)
+            {
+                l.GravityOn = false;
+                MoveEntities += l.OnMove;
+            }
 
             foreach (var m in movables)
             {
                 MoveEntities += m.OnMove;
             }
+
             MoveEntities += obstacles[^1].OnMove;
         }
 
@@ -74,17 +83,15 @@ namespace SilkyEngine.Sources
 
             foreach (var m in movables)
             {
-                m.VerticalSpeed -= Gravity * (float)deltaTime;
-                m.DeltaPosition += m.VerticalSpeed * Vector3.UnitY * (float)deltaTime;
+                if (m.GravityOn)
+                {
+                    m.VerticalSpeed -= Gravity * (float)deltaTime;
+                    m.DeltaPosition += m.VerticalSpeed * Vector3.UnitY * (float)deltaTime;
+                }
 
                 float nextHeight = GetHeight(m.Position + m.DeltaPosition);
                 if (nextHeight > m.Position.Y)
                     m.DeltaPosition += (nextHeight - m.Position.Y) * Vector3.UnitY;
-
-                if (GetHeight(m.Position) >= m.Position.Y)
-                {
-                    m.Collision(new CollisionInfo(obstacles[0], -Vector3.UnitY));
-                }
             }
 
             CollisionDetection.CheckCollisions();
@@ -92,6 +99,8 @@ namespace SilkyEngine.Sources
             obstacles[^1].DeltaPosition = Vector3.Zero;
             foreach (var m in movables)
                 m.DeltaPosition = Vector3.Zero;
+            foreach (var l in lights)
+                l.DeltaPosition = Vector3.Zero;
         }
 
         public bool IsWalkable(Vector3 position)

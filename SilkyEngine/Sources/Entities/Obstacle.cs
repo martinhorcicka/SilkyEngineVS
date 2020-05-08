@@ -2,6 +2,7 @@
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace SilkyEngine.Sources.Entities
@@ -17,7 +18,7 @@ namespace SilkyEngine.Sources.Entities
             : base(world, boundingVolume, behavior, texturedModel, position, rotation, scale, dimensions)
         { }
 
-        public override void Collision(CollisionInfo cInfo)
+        public override void Collision(List<EntityCollisionInfo> collisionInfos)
         {
 
         }

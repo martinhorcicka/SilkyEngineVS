@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
@@ -7,7 +8,7 @@ using SilkyEngine.Sources.Physics.Collisions;
 
 namespace SilkyEngine.Sources.Entities
 {
-    public class LightEntity : Entity
+    public class LightEntity : Movable
     {
         public event Action LightMoved;
         private LightStruct lightStruct;
@@ -28,7 +29,7 @@ namespace SilkyEngine.Sources.Entities
         public LightStruct GetLightStruct() => lightStruct;
         public string GetLightStructName() => lightStruct.Name;
 
-        public override void Collision(CollisionInfo cInfo)
+        public override void Collision(List<EntityCollisionInfo> collisionInfos)
         {
         }
     }
