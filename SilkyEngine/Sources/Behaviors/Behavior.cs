@@ -21,6 +21,6 @@ namespace SilkyEngine.Sources.Behaviors
             entities.Add(entity);
         }
 
-        protected abstract void OnUpdate(double deltaTime);
+        public abstract void OnUpdate(double deltaTime);
     }
 }

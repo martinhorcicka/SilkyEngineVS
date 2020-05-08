@@ -19,14 +19,12 @@ namespace SilkyEngine.Sources.Behaviors
             direction = offset / remaining;
         }
 
-        protected override void OnUpdate(double deltaTime)
+        public override void OnUpdate(double deltaTime)
         {
             if (remaining < 0)
             {
                 remaining = offset.Length();
                 direction *= -1;
-                foreach (var e in entities)
-                    e.Translate(Vector3.Zero);
                 return;
             }
 
@@ -34,7 +32,7 @@ namespace SilkyEngine.Sources.Behaviors
             remaining -= dDistance;
 
             foreach (var e in entities)
-                e.Translate(dDistance * direction);
+                e.DeltaPosition += dDistance * direction;
         }
     }
 }

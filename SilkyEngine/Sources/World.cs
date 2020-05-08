@@ -29,9 +29,9 @@ namespace SilkyEngine.Sources
         Func<float, float, float, Vector3> newPosition;
         private RectangleF walkableArea;
 
-        private event Action<double> Update;
+        private event Action MoveEntities;
 
-        private List<Entity> movedEntities = new List<Entity>();
+        protected float Gravity { get; } = 20f;
 
         public World(IWindow window, Loader loader)
         {
@@ -59,38 +59,39 @@ namespace SilkyEngine.Sources
             CreateObstacles(loader, rotation, counterRotation, walkBackAndForth, randomWalkCube);
             CreateLights(loader, rotateArounOrigin, randomWalkLight);
 
+            movables[0].Mass = 3f;
+
             foreach (var m in movables)
             {
-                Update += m.OnUpdate;
+                MoveEntities += m.OnMove;
             }
-
-            foreach (var az in activeZones)
-            {
-                Update += az.OnUpdate;
-            }
+            MoveEntities += obstacles[^1].OnMove;
         }
 
         private void OnUpdate(double deltaTime)
         {
-            Update?.Invoke(deltaTime);
-            foreach (var me in movedEntities)
+            controller.OnUpdate(deltaTime);
+
+            foreach (var m in movables)
             {
-                foreach (var az in activeZones)
+                m.VerticalSpeed -= Gravity * (float)deltaTime;
+                m.DeltaPosition += m.VerticalSpeed * Vector3.UnitY * (float)deltaTime;
+
+                float nextHeight = GetHeight(m.Position + m.DeltaPosition);
+                if (nextHeight > m.Position.Y)
+                    m.DeltaPosition += (nextHeight - m.Position.Y) * Vector3.UnitY;
+
+                if (GetHeight(m.Position) >= m.Position.Y)
                 {
-                    if (az.IsInside(me))
-                    {
-                        az.AddEntity(me);
-                        break;
-                    }
+                    m.Collision(new CollisionInfo(obstacles[0], -Vector3.UnitY));
                 }
             }
-            movedEntities.Clear();
-        }
 
-        public void EntityMoved(Entity entity)
-        {
-            if (!movedEntities.Contains(entity))
-                movedEntities.Add(entity);
+            CollisionDetection.CheckCollisions();
+            MoveEntities?.Invoke();
+            obstacles[^1].DeltaPosition = Vector3.Zero;
+            foreach (var m in movables)
+                m.DeltaPosition = Vector3.Zero;
         }
 
         public bool IsWalkable(Vector3 position)
@@ -104,6 +105,7 @@ namespace SilkyEngine.Sources
 
         public ICameraController Controller => (ICameraController)controller;
 
+        public float GetHeight(Vector3 position) => GetHeight(position.X, position.Z);
         public float GetHeight(float x, float y) => heightMap.GetHeight(x, y);
 
         private void CreatePlayer(Loader loader)

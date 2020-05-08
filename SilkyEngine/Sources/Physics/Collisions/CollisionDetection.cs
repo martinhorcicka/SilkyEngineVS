@@ -12,12 +12,9 @@ namespace SilkyEngine.Sources.Physics.Collisions
         private static List<Tuple<Entity, BoundingVolume>> collidables = new List<Tuple<Entity, BoundingVolume>>();
         public static void Add(Entity entity, BoundingVolume volume) => collidables.Add(Tuple.Create(entity, volume));
 
-        public static void OnUpdate(double deltaTime)
-        {
-            CheckCollisions(collidables, deltaTime);
-        }
+        public static void CheckCollisions() => CheckCollisions(collidables);
 
-        private static void CheckCollisions(List<Tuple<Entity, BoundingVolume>> collidables, double deltaTime)
+        private static void CheckCollisions(List<Tuple<Entity, BoundingVolume>> collidables)
         {
             for (int i = 0; i < collidables.Count; i++)
                 for (int j = i + 1; j < collidables.Count; j++)
@@ -25,7 +22,7 @@ namespace SilkyEngine.Sources.Physics.Collisions
                     var c1 = collidables[i];
                     var c2 = collidables[j];
                     if (AreColliding(c1.Item2, c2.Item2, out Vector3 normal))
-                        DispatchCollision(c1.Item1, c2.Item1, normal, deltaTime);
+                        DispatchCollision(c1.Item1, c2.Item1, normal);
                 }
         }
 
@@ -34,10 +31,10 @@ namespace SilkyEngine.Sources.Physics.Collisions
             return v1.Overlaps(v2, out normal);
         }
 
-        private static void DispatchCollision(Entity e1, Entity e2, Vector3 normal, double deltaTime)
+        private static void DispatchCollision(Entity e1, Entity e2, Vector3 normal)
         {
-            e1.Collision(new CollisionInfo(e2, normal, deltaTime));
-            e2.Collision(new CollisionInfo(e1, -normal, deltaTime));
+            e1.Collision(new CollisionInfo(e2, normal));
+            e2.Collision(new CollisionInfo(e1, -normal));
         }
     }
 }

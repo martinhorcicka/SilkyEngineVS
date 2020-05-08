@@ -28,7 +28,6 @@ namespace SilkyEngine.Sources
             window.Load += OnLoad;
             window.Render += OnRender;
             window.Update += OnUpdate;
-            window.Update += CollisionDetection.OnUpdate;
             window.Closing += OnClose;
         }
 
@@ -74,7 +73,6 @@ namespace SilkyEngine.Sources
             window.Load -= OnLoad;
             window.Render -= OnRender;
             window.Update -= OnUpdate;
-            window.Update -= CollisionDetection.OnUpdate;
             window.Closing -= OnClose;
             Console.WriteLine("Closing..");
             loader.Dispose();

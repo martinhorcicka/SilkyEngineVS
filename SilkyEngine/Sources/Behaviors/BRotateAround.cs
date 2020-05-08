@@ -22,14 +22,12 @@ namespace SilkyEngine.Sources.Behaviors
             this.heightMap = heightMap;
         }
 
-        protected override void OnUpdate(double deltaTime)
+        public override void OnUpdate(double deltaTime)
         {
             foreach (var e in entities)
             {
                 var prevHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
                 RotateEntity(e, speed * (float)deltaTime);
-                var currentHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
-                e.SetHeight(e.Position.Y + currentHeight - prevHeight);
             }
         }
 
@@ -38,7 +36,7 @@ namespace SilkyEngine.Sources.Behaviors
             var rotMat = Matrix4x4.CreateFromAxisAngle(axis, angle);
             Vector3 R = e.Position - point;
             Vector3 rotR = Computation.MatMul(rotMat, R);
-            e.Translate(rotR - R);
+            e.DeltaPosition += rotR - R;
         }
     }
 }

@@ -25,7 +25,7 @@ namespace SilkyEngine.Sources.Zones
         {
             foreach (var e in entities)
             {
-                e.Translate(Vector3.UnitY * (float)deltaTime * 5);
+                e.DeltaPosition += Vector3.UnitY * (float)deltaTime * 5;
             }
         }
     }

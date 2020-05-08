@@ -24,7 +24,7 @@ namespace SilkyEngine.Sources.Behaviors
             sleepTimer = 0;
         }
 
-        protected override void OnUpdate(double deltaTime)
+        public override void OnUpdate(double deltaTime)
         {
             if (sleepTimer > 0)
             {
@@ -38,9 +38,6 @@ namespace SilkyEngine.Sources.Behaviors
                 sleepTimer = sleepTime;
                 walkTimer = (MAX_DURATION - MIN_DURATION) * (float)generator.NextDouble() + MIN_DURATION;
                 currentDirection = Computation.RandomVector2(generator);
-
-                foreach (var e in entities)
-                    e.Translate(Vector3.Zero);
             }
             else
             {
@@ -48,9 +45,8 @@ namespace SilkyEngine.Sources.Behaviors
                 foreach (var e in entities)
                 {
                     var prevHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
-                    e.Translate(dPos * speed);
+                    e.DeltaPosition += dPos * speed;
                     var currentHeight = heightMap?.Invoke(e.Position.X, e.Position.Z) ?? 0;
-                    e.SetHeight(e.Position.Y + currentHeight - prevHeight);
                 }
                 walkTimer -= (float)deltaTime;
             }

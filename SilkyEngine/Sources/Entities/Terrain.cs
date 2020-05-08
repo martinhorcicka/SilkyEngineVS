@@ -16,7 +16,6 @@ namespace SilkyEngine.Sources.Entities
         {
         }
 
-
         public override void Collision(CollisionInfo cInfo)
         { }
     }

@@ -38,7 +38,7 @@ namespace SilkyEngine.Sources.Controls
             throw new NotImplementedException();
         }
 
-        protected override void OnUpdate(double deltaTime)
+        public override void OnUpdate(double deltaTime)
         {
             float speed = movementSpeed * (float)deltaTime;
             Vector3 dPos = Vector3.Zero;

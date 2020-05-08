@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics.Optimization.LineSearch;
+using MathNet.Numerics.Providers.LinearAlgebra;
 using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
@@ -13,9 +14,7 @@ namespace SilkyEngine.Sources.Entities
     {
         public virtual float CurrentSpeed { get; set; }
         public float VerticalSpeed { get; set; } = 0;
-        public float RelMass { get; set; }
         public bool IsOnGround { get; protected set; }
-        protected float Gravity { get; } = 20f;
 
         public Movable(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
             : this(world, boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
@@ -29,40 +28,45 @@ namespace SilkyEngine.Sources.Entities
             Mass = 1f;
         }
 
-        public virtual void OnUpdate(double deltaTime)
+        protected override void Translate(Vector3 dp)
         {
-            Translate(Vector3.UnitY * VerticalSpeed * (float)deltaTime);
-            VerticalSpeed -= Gravity * (float)deltaTime;
-
-            float terraintHeight = world.GetHeight(Position.X, Position.Z);
-            if (Position.Y < terraintHeight)
-            {
-                IsOnGround = true;
-                VerticalSpeed = 0;
-                SetHeight(terraintHeight);
-            }
+            if (dp.Y < 0) IsOnGround = false;
+            base.Translate(dp);
         }
 
         public override void Collision(CollisionInfo cInfo)
         {
-            if (!(cInfo.Target is Player || cInfo.Target is Movable)) return;
-            if (cInfo.Target is Movable m)
-            {
-                m.Translate(cInfo.Normal * m.CurrentSpeed * (float)cInfo.DeltaTime);
-                RelMass = Mass + m.RelMass;
-            }
-            if (cInfo.Target is Player p)
-            {
+            var normal = cInfo.Normal;
 
-                float deltaTime = (float)cInfo.DeltaTime;
-                float distance = p.MovementSpeed * deltaTime;
-                Vector3 dPos = cInfo.Normal;
-                float massFrac = RelMass / (RelMass + p.Mass);
+            switch (cInfo.Target)
+            {
+                case Obstacle obstacle:
+                    DeltaPosition += obstacle?.DeltaPosition ?? Vector3.Zero;
 
-                p.Translate(dPos * distance * massFrac);
-                Translate(-dPos * distance * (1 - massFrac));
-                CurrentSpeed = MovedBy.Length() / deltaTime;
-                RelMass = Mass;
+                    float magY = Vector3.Dot(normal, Vector3.UnitY);
+                    if (magY < 0)
+                    {
+                        VerticalSpeed = 0;
+                        IsOnGround = true;
+                    }
+                    else if (VerticalSpeed > 0 && magY > 0.8f)
+                    {
+                        VerticalSpeed = 0;
+                    }
+
+                    var d = Vector3.Dot(normal, DeltaPosition);
+                    if (d > 0)
+                        DeltaPosition -= d * normal;
+                    break;
+
+                case Movable movable:
+                    float mag = Vector3.Dot(normal, DeltaPosition);
+                    if (mag < 0) return;
+
+                    float massFrac = Mass / (Mass + movable.Mass);
+                    DeltaPosition -= mag * normal * (1 - massFrac);
+                    movable.DeltaPosition += mag * normal * massFrac;
+                    break;
             }
         }
     }

@@ -18,7 +18,7 @@ namespace SilkyEngine.Sources.Entities
             this.lightStruct = lightStruct;
         }
 
-        public override void Translate(Vector3 dp)
+        protected override void Translate(Vector3 dp)
         {
             base.Translate(dp);
             lightStruct.Position = position;
@@ -30,9 +30,6 @@ namespace SilkyEngine.Sources.Entities
 
         public override void Collision(CollisionInfo cInfo)
         {
-            if (!(cInfo.Target is Player)) return;
-
-            Console.WriteLine($"{DateTime.Now}: A light at {position} detected player at {cInfo.Target.Position}!");
         }
     }
 }

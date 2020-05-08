@@ -24,9 +24,10 @@ namespace SilkyEngine.Sources.Controls
         protected static Dictionary<MouseButton, bool> isMBPressed = new Dictionary<MouseButton, bool>(mouseButtons.Length);
         protected float mouseSensitivity;
 
-        public Controller(IWindow window, float mouseSensitivity = 0.002f) : base(window)
+        public Controller(IWindow window, float mouseSensitivity = 0.002f) : base (window)
         {
             this.window = window;
+            window.Update -= OnUpdate;
 
             foreach (var mb in mouseButtons)
                 isMBPressed.Add(mb, false);
@@ -53,7 +54,7 @@ namespace SilkyEngine.Sources.Controls
             this.mouseSensitivity = mouseSensitivity;
         }
 
-        protected override abstract void OnUpdate(double deltaTime);
+        public override abstract void OnUpdate(double deltaTime);
         protected abstract void OnMouseMove(IMouse mouse, PointF point);
         protected abstract void OnScroll(IMouse mouse, ScrollWheel wheel);
         protected virtual void OnMouseDown(IMouse mouse, MouseButton button)

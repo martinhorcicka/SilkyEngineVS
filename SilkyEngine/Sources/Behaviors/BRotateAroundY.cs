@@ -11,7 +11,7 @@ namespace SilkyEngine.Sources.Behaviors
             this.speed = speed;
         }
 
-        protected override void OnUpdate(double deltaTime)
+        public override void OnUpdate(double deltaTime)
         {
             foreach (var e in entities)
                 e.RotateY(speed * (float)deltaTime);

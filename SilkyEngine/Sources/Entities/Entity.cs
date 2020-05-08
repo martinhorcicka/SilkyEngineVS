@@ -8,7 +8,6 @@ namespace SilkyEngine.Sources.Entities
 {
     public abstract class Entity
     {
-        public static Entity Empty = null;
         protected World world;
         protected BoundingVolume boundingVolume;
         protected TexturedModel texturedModel;
@@ -16,6 +15,16 @@ namespace SilkyEngine.Sources.Entities
         protected Vector3 rotation;
         protected Vector3 dimensions;
         protected float scale;
+
+        public TexturedModel TexturedModel => texturedModel;
+        public Vector3 Center => texturedModel.Center * scale + position;
+        public Vector3 Position => position;
+        public Vector3 Rotation => rotation;
+        public Vector3 Up => Vector3.UnitY;
+        public Vector3 Dimensions => dimensions;
+        public float Scale => scale;
+        public float Mass { get; set; } = 0;
+        public Vector3 DeltaPosition { get; set; } = Vector3.Zero;
 
         public Entity(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale, Vector3 dimensions)
         {
@@ -38,36 +47,11 @@ namespace SilkyEngine.Sources.Entities
             : this(world, boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
         { }
 
-        public TexturedModel TexturedModel => texturedModel;
 
-        public Vector3 Center => texturedModel.Center * scale + position;
+        public void OnMove() => Translate(DeltaPosition);
 
-        public virtual void SetHeight(float newHeight)
+        protected virtual void Translate(Vector3 dp)
         {
-            movedBy += (newHeight - position.Y) * Vector3.UnitY;
-            boundingVolume.SetHeight(newHeight + texturedModel.Center.Y * scale);
-            position.Y = newHeight;
-        }
-
-        public Vector3 Position
-        {
-            get { return position; }
-        }
-
-        public Vector3 Rotation => rotation;
-        public Vector3 Up => Vector3.UnitY;
-        public Vector3 Dimensions => dimensions;
-        public float Scale => scale;
-
-        private Vector3 movedBy = Vector3.Zero;
-        public Vector3 MovedBy => movedBy;
-
-        public float Mass { get; set; } = 0;
-
-        public virtual void Translate(Vector3 dp)
-        {
-            world.EntityMoved(this);
-            movedBy = dp;
             boundingVolume.Translate(dp);
             position += dp;
         }
@@ -93,6 +77,5 @@ namespace SilkyEngine.Sources.Entities
         public virtual void RotateAroundAxis(Vector3 axis, float angle) => rotation += axis * angle;
 
         public abstract void Collision(CollisionInfo cInfo);
-
     }
 }

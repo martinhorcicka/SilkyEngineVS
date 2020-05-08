@@ -72,7 +72,7 @@ namespace SilkyEngine.Sources.Controls
             camera.Position = player.Focus + R * distance;
         }
 
-        protected override void OnUpdate(double deltaTime)
+        public override void OnUpdate(double deltaTime)
         {
             Vector3 dPos = Vector3.Zero;
             if (isPressed[Key.W])
@@ -86,7 +86,7 @@ namespace SilkyEngine.Sources.Controls
             dPos = (dPos != Vector3.Zero) ? Vector3.Normalize(dPos) : Vector3.Zero;
 
             float distance = player.MovementSpeed * (float)deltaTime;
-            player.Translate(dPos * distance);
+            player.DeltaPosition += dPos * distance;
         }
 
         protected override void OnKeyDown(IKeyboard keyboard, Key key, int mode)
@@ -110,12 +110,6 @@ namespace SilkyEngine.Sources.Controls
             RecalculateCamera(0, 0);
         }
 
-        private void OnHeightSet(float newHeight)
-        {
-            float dHeight = camera.Position.Y - player.Position.Y;
-            camera.SetHeight(newHeight + dHeight);
-        }
-
         private void OnPlayerMove(Vector3 dPos)
         {
             camera.Translate(dPos);
@@ -124,8 +118,7 @@ namespace SilkyEngine.Sources.Controls
         public void SubscribePlayer(Player player)
         {
             this.player = player;
-            this.player.Move += OnPlayerMove;
-            this.player.HeightSet += OnHeightSet;
+            this.player.Moved += OnPlayerMove;
         }
 
         public void SubscribeCamera(Camera camera)

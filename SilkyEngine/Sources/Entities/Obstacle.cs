@@ -8,6 +8,7 @@ namespace SilkyEngine.Sources.Entities
 {
     public class Obstacle : Entity
     {
+        public static Obstacle Empty { get; } = null;
         public Obstacle(World world, BoundingVolume boundingVolume, Behavior behavior, TexturedModel texturedModel, Vector3 position, Vector3 rotation, float scale)
             : this(world, boundingVolume, behavior, texturedModel, position, rotation, scale, scale * Vector3.One)
         { }
@@ -18,22 +19,7 @@ namespace SilkyEngine.Sources.Entities
 
         public override void Collision(CollisionInfo cInfo)
         {
-            if (!(cInfo.Target is Movable m)) return;
 
-            float distance = m.CurrentSpeed * (float)cInfo.DeltaTime;
-            Vector3 dPos = cInfo.Normal;
-
-            if (dPos.Y == 1f)
-            {
-                m.VerticalSpeed = 0;
-                dPos.Y = 0;
-            }
-            else if (dPos.Y == -1f && m.VerticalSpeed > 0)
-            {
-                m.VerticalSpeed = 0;
-            }
-
-            m.Translate(dPos * distance + MovedBy);
         }
     }
 }
