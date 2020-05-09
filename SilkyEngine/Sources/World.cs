@@ -63,17 +63,8 @@ namespace SilkyEngine.Sources
 
             movables[0].Mass = 3f;
 
-            foreach (var l in lights)
-            {
-                l.GravityOn = false;
-                MoveEntities += l.OnMove;
-            }
-
-            foreach (var m in movables)
-            {
-                MoveEntities += m.OnMove;
-            }
-
+            lights.ForEach((light) => { light.GravityOn = false; MoveEntities += light.OnMove; });
+            movables.ForEach((movable) => MoveEntities += movable.OnMove);
             MoveEntities += obstacles[^1].OnMove;
         }
 
@@ -95,12 +86,12 @@ namespace SilkyEngine.Sources
             }
 
             CollisionDetection.CheckCollisions();
+
             MoveEntities?.Invoke();
+
             obstacles[^1].DeltaPosition = Vector3.Zero;
-            foreach (var m in movables)
-                m.DeltaPosition = Vector3.Zero;
-            foreach (var l in lights)
-                l.DeltaPosition = Vector3.Zero;
+            movables.ForEach((m) => m.DeltaPosition = Vector3.Zero);
+            lights.ForEach((l) => l.DeltaPosition = Vector3.Zero);
         }
 
         public bool IsWalkable(Vector3 position)
@@ -211,7 +202,7 @@ namespace SilkyEngine.Sources
             Shader terrainShader = renderer.GetShader(ShaderTypes.Terrain);
 
             terrainShader.Bind();
-            terrainShader.UpdateUniform("texScale", 50f);
+            terrainShader.UpdateUniform("texScale", 25f);
         }
     }
 }

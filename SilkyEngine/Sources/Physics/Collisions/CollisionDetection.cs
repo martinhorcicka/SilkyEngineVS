@@ -11,7 +11,12 @@ namespace SilkyEngine.Sources.Physics.Collisions
     public static class CollisionDetection
     {
         private static List<Collidable> collidables = new List<Collidable>();
-        public static void Add(Entity entity, BoundingVolume volume) => collidables.Add(new Collidable(entity, volume));
+
+        public static void Add(Entity entity, BoundingVolume volume)
+        {
+            collidables.Add(new Collidable(entity, volume));
+            collidables.Sort();
+        }
         public static void AddTerrain(List<Terrain> terrain)
         {
             foreach (var t in terrain)
@@ -32,8 +37,7 @@ namespace SilkyEngine.Sources.Physics.Collisions
                 {
                     var c1 = collidables[i];
                     var c2 = collidables[j];
-                    c1.IsCollidingWith(c2);
-                    c2.IsCollidingWith(c1);
+                    Collidable.IsCollidingWith(c1, c2);
                 }
 
             DispatchCollision(collidables);
@@ -43,8 +47,8 @@ namespace SilkyEngine.Sources.Physics.Collisions
         {
             foreach (var collidable in collidables)
             {
-                collidable.Entity.Collision(collidable.collisionInfos);
-                collidable.collisionInfos.Clear();
+                collidable.Entity.Collision(collidable.CollisionInfos);
+                collidable.CollisionInfos.Clear();
             }
         }
     }

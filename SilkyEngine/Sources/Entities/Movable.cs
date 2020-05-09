@@ -5,6 +5,7 @@ using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 
@@ -37,48 +38,46 @@ namespace SilkyEngine.Sources.Entities
 
         public override void Collision(List<EntityCollisionInfo> collisionInfos)
         {
+            float MassSum = collisionInfos.FindAll((cI) => cI.Entity is Movable).Sum((cI) => cI.Entity.Mass) + Mass;
+            List<EntityCollisionInfo> newCollisions = new List<EntityCollisionInfo>();
+            Vector3 addedDeltaPosition = Vector3.Zero;
+
             foreach (var cInfo in collisionInfos)
             {
                 var normal = cInfo.Normal;
-                var mag = Vector3.Dot(normal, DeltaPosition);
 
                 switch (cInfo.Entity)
                 {
                     case Terrain terrain:
                         IsOnGround = true;
                         VerticalSpeed = 0;
-
-                        if (mag > 0)
-                            DeltaPosition -= mag * normal;
-
                         break;
+
                     case Obstacle obstacle:
                         DeltaPosition += obstacle?.DeltaPosition ?? Vector3.Zero;
 
-                        float magY = Vector3.Dot(normal, Vector3.UnitY);
-                        if (magY < 0)
+                        if (normal.Y < 0)
                         {
                             VerticalSpeed = 0;
                             IsOnGround = true;
                         }
-                        else if (VerticalSpeed > 0 && magY > 0.8f)
+                        else if (VerticalSpeed > 0 && normal.Y > 0.8f)
                         {
                             VerticalSpeed = 0;
                         }
-
-                        if (mag > 0)
-                            DeltaPosition -= mag * normal;
                         break;
 
                     case Movable movable:
-                        if (mag < 0) return;
+                        float mag = Vector3.Dot(normal, movable.DeltaPosition);
+                        if (mag > 0) continue;
 
-                        float massFrac = Mass / (Mass + movable.Mass);
-                        DeltaPosition -= mag * normal * (1 - massFrac);
-                        movable.DeltaPosition += mag * normal * massFrac;
+                        float massFrac = movable.Mass / MassSum;
+                        addedDeltaPosition += mag * normal * massFrac;
+                        movable.DeltaPosition -= mag * normal * (1 - massFrac);
                         break;
                 }
             }
+            DeltaPosition += addedDeltaPosition;
         }
     }
 }

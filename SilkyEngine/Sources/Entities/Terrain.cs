@@ -1,4 +1,5 @@
-﻿using SilkyEngine.Sources.Behaviors;
+﻿using MathNet.Numerics.Providers.LinearAlgebra;
+using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
 using System.Collections.Generic;
@@ -25,6 +26,23 @@ namespace SilkyEngine.Sources.Entities
         public float GetHeight(float x, float y) => world.GetHeight(x, y);
 
         public override void Collision(List<EntityCollisionInfo> collisionInfos)
-        { }
+        {
+            foreach (var cInfo in collisionInfos)
+            {
+                var normal = cInfo.Normal;
+                switch (cInfo.Entity)
+                {
+                    case Movable movable:
+                        float mag = Vector3.Dot(normal, movable.DeltaPosition);
+                        if (mag < 0)
+                            movable.DeltaPosition -= mag * normal;
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
     }
 }
