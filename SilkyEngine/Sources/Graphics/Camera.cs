@@ -12,7 +12,6 @@ namespace SilkyEngine.Sources.Graphics
         private Vector3 position, front, up = Vector3.UnitY;
         private float pitch, yaw;
 
-        public void SetHeight(float newHeight) => position.Y = newHeight;
         public Vector3 Position
         {
             get { return position; }

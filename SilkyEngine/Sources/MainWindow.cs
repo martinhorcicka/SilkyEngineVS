@@ -63,9 +63,26 @@ namespace SilkyEngine.Sources
             renderer.Draw();
         }
 
+        double timeMeasured = 1;
+        double remaining = 1;
+        int count = 0;
+        double avg = 1 / 60d;
         private void OnUpdate(double deltaTime)
         {
-            window.Title = $"FPS: {1 / deltaTime:0}";
+            if (remaining < 0)
+            {
+                avg /= count;
+                count = 0;
+                remaining = timeMeasured;
+                window.Title = $"FPS: {1 / avg:0}";
+                avg = 0;
+            }
+            else
+            {
+                count++;
+                avg += deltaTime;
+                remaining -= deltaTime;
+            }
         }
 
         private void OnClose()
@@ -91,6 +108,8 @@ namespace SilkyEngine.Sources
             options.WindowBorder = WindowBorder.Fixed;
             options.Size = new Size(1280, 720);
             options.PreferredDepthBufferBits = 24;
+            options.VSync = VSyncMode.Off;
+            options.UpdatesPerSecond = 150;
 
             return options;
         }

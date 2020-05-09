@@ -19,24 +19,7 @@ namespace SilkyEngine.Sources.Entities
         { }
 
         public override void Collision(List<EntityCollisionInfo> collisionInfos)
-        {
-            foreach (var cInfo in collisionInfos)
-            {
-                var normal = cInfo.Normal;
-
-                switch (cInfo.Entity)
-                {
-                    case Movable movable:
-                        var mag = Vector3.Dot(normal, movable.DeltaPosition);
-
-                        if (mag > 0) continue;
-
-                        movable.DeltaPosition -= mag * normal;
-
-                        break;
-                }
-            }
-        }
+        { }
     }
 }
 

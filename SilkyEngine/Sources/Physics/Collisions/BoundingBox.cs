@@ -52,11 +52,6 @@ namespace SilkyEngine.Sources.Physics.Collisions
             base.RotateZ(angle);
             Vertices = GetVertices();
         }
-        public override void SetHeight(float newHeight)
-        {
-            base.SetHeight(newHeight);
-            Vertices = GetVertices();
-        }
 
         private BoundingBox(Vector3 center, Vector3 rotation, float sideLength) : this(center, rotation, sideLength * Vector3.One)
         { }

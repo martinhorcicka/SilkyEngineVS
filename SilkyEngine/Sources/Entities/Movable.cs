@@ -41,6 +41,7 @@ namespace SilkyEngine.Sources.Entities
             float MassSum = collisionInfos.FindAll((cI) => cI.Entity is Movable).Sum((cI) => cI.Entity.Mass) + Mass;
             List<EntityCollisionInfo> newCollisions = new List<EntityCollisionInfo>();
             Vector3 addedDeltaPosition = Vector3.Zero;
+            float mag = 0f;
 
             foreach (var cInfo in collisionInfos)
             {
@@ -55,6 +56,9 @@ namespace SilkyEngine.Sources.Entities
 
                     case Obstacle obstacle:
                         DeltaPosition += obstacle?.DeltaPosition ?? Vector3.Zero;
+                        mag = Vector3.Dot(DeltaPosition, normal);
+                        if (mag < 0) continue;
+                        DeltaPosition -= mag * normal;
 
                         if (normal.Y < 0)
                         {
@@ -68,7 +72,7 @@ namespace SilkyEngine.Sources.Entities
                         break;
 
                     case Movable movable:
-                        float mag = Vector3.Dot(normal, movable.DeltaPosition);
+                        mag = Vector3.Dot(normal, movable.DeltaPosition);
                         if (mag > 0) continue;
 
                         float massFrac = movable.Mass / MassSum;
