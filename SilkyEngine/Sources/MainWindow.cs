@@ -2,7 +2,6 @@ using System;
 using System.Drawing;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
-using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Graphics;
 
 namespace SilkyEngine.Sources
@@ -13,7 +12,7 @@ namespace SilkyEngine.Sources
         private GL gl;
         private Renderer renderer;
         private Loader loader;
-        private Shader basicShader, terrainShader, lightShader;
+        private Graphics.Shader basicShader, terrainShader, lightShader;
         private World world;
 
         public MainWindow() : this(DefaultWindowOptions()) { }
@@ -33,7 +32,7 @@ namespace SilkyEngine.Sources
 
         private void OnLoad()
         {
-            gl = GL.GetApi();
+            gl = GL.GetApi(window);
 
             loader = new Loader(gl);
             world = new World(window, loader);
@@ -101,9 +100,9 @@ namespace SilkyEngine.Sources
             var options = WindowOptions.Default;
             options.API = API;
             options.WindowBorder = WindowBorder.Fixed;
-            options.Size = new Size(1280, 720);
+            options.Size = new(1280, 720);
             options.PreferredDepthBufferBits = 24;
-            options.VSync = VSyncMode.Off;
+            options.VSync = false;
             options.UpdatesPerSecond = 150;
 
             return options;

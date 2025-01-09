@@ -1,8 +1,8 @@
+using System;
 using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using SilkyEngine.Sources.Interfaces;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -19,7 +19,10 @@ namespace SilkyEngine.Sources.Graphics
             Image<Rgba32> img = Image.Load<Rgba32>("Resources/Textures/" + name);
             img.Mutate(x => x.Flip(FlipMode.Vertical));
 
-            fixed (void* data = &MemoryMarshal.GetReference(img.GetPixelSpan()))
+            byte[] bytes = new byte[4 * img.Width * img.Height];
+            Span<byte> pixels = new Span<byte>(bytes);
+            img.CopyPixelDataTo(pixels);
+            fixed (void* data = &MemoryMarshal.GetReference(pixels))
             {
                 Load(data, (uint)img.Width, (uint)img.Height);
             }

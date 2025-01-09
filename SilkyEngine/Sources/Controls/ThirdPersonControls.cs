@@ -1,9 +1,7 @@
 using System;
-using System.Drawing;
 using System.Numerics;
 using Silk.NET.Input;
-using Silk.NET.Input.Common;
-using Silk.NET.Windowing.Common;
+using Silk.NET.Windowing;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Interfaces;
@@ -40,7 +38,7 @@ namespace SilkyEngine.Sources.Controls
             mouse.Cursor.CursorMode = CursorMode.Normal;
         }
 
-        protected override void OnMouseMove(IMouse mouse, PointF point)
+        protected override void OnMouseMove(IMouse mouse, Vector2 point)
         {
             Vector2 mousePos = new Vector2(point.X, point.Y);
             Vector2 deltaMouse = mousePos - prevMousePos;

@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
-using Silk.NET.Windowing.Common;
+using Silk.NET.Windowing;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Interfaces;
-using SilkyEngine.Sources.Physics.Collisions;
 using SilkyEngine.Sources.Tools;
 
 namespace SilkyEngine.Sources.Graphics
@@ -29,14 +29,14 @@ namespace SilkyEngine.Sources.Graphics
             window.Resize += OnResize;
         }
 
-        private void MakeProjection() => projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(Computation.DegToRad(45), (float)window.Size.Width / window.Size.Height, 0.5f, 200f);
+        private void MakeProjection() => projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfView(Computation.DegToRad(45), (float)window.Size.X / window.Size.Y, 0.5f, 200f);
         public void Prepare()
         {
             gl.Enable(EnableCap.DepthTest);
             gl.DepthFunc(DepthFunction.Less);
 
             gl.Enable(EnableCap.CullFace);
-            gl.CullFace(CullFaceMode.Front);
+            gl.CullFace(GLEnum.Front);
             gl.FrontFace(FrontFaceDirection.CW);
 
             gl.ClearColor(Color.LightSkyBlue);
@@ -143,7 +143,7 @@ namespace SilkyEngine.Sources.Graphics
             return shaders[type];
         }
 
-        private void OnResize(Size newSize)
+        private void OnResize(Vector2D<int> newSize)
         {
             gl.Viewport(newSize);
             MakeProjection();

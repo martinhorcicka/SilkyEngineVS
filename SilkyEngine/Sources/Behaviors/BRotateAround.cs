@@ -1,6 +1,5 @@
-using System;
 using System.Numerics;
-using Silk.NET.Windowing.Common;
+using Silk.NET.Windowing;
 using SilkyEngine.Sources.Entities;
 using SilkyEngine.Sources.Tools;
 

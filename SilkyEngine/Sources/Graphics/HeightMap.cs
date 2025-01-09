@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
@@ -10,9 +9,9 @@ namespace SilkyEngine.Sources.Graphics
     public class HeightMap
     {
         private ImgData imgData;
-        private RectangleF area;
+        private System.Drawing.RectangleF area;
         float minHeight, maxHeight;
-        public HeightMap(string heightMapName, RectangleF area, float minHeight = -1, float maxHeight = 1)
+        public HeightMap(string heightMapName, System.Drawing.RectangleF area, float minHeight = -1, float maxHeight = 1)
         {
             this.area = area;
             this.minHeight = minHeight;
@@ -22,10 +21,15 @@ namespace SilkyEngine.Sources.Graphics
 
             var data = new byte[img.Width, img.Height];
             imgData = new ImgData(data);
-            var pixelSpan = img.GetPixelSpan();
-            for (int i = 0; i < pixelSpan.Length; i++)
+            var pixels = img.GetPixelMemoryGroup();
+            var i = 0;
+            foreach (var pixelRow in pixels)
             {
-                imgData[i % img.Width, i / img.Width] = pixelSpan[i].R;
+                foreach (var pix in pixelRow.ToArray())
+                {
+                    imgData[i % img.Width, i / img.Width] = pix.R;
+                }
+                i++;
             }
             img.Dispose();
         }

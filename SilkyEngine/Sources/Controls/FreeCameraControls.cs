@@ -1,9 +1,7 @@
 using System;
-using System.Drawing;
 using System.Numerics;
 using Silk.NET.Input;
-using Silk.NET.Input.Common;
-using Silk.NET.Windowing.Common;
+using Silk.NET.Windowing;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Interfaces;
 
@@ -23,7 +21,7 @@ namespace SilkyEngine.Sources.Controls
 
         public void SubscribeCamera(Camera camera) => this.camera = camera;
 
-        protected override void OnMouseMove(IMouse mouse, PointF point)
+        protected override void OnMouseMove(IMouse mouse, Vector2 point)
         {
             Vector2 mousePos = new Vector2(point.X, point.Y);
             Vector2 deltaMouse = mousePos - prevMousePos;
@@ -49,7 +47,7 @@ namespace SilkyEngine.Sources.Controls
             if (isPressed[Key.A])
                 dPos -= camera.Right;
             if (isPressed[Key.D])
-                dPos +=camera.Right;
+                dPos += camera.Right;
             if (isPressed[Key.Space])
                 dPos += camera.Up;
             if (isPressed[Key.ShiftLeft])

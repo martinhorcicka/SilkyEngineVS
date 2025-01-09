@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Silk.NET.Input;
-using Silk.NET.Input.Common;
 using Silk.NET.OpenGL;
-using Silk.NET.Windowing.Common;
+using Silk.NET.Windowing;
 using SilkyEngine.Sources.Behaviors;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 
 
@@ -18,13 +16,13 @@ namespace SilkyEngine.Sources.Controls
     {
         private IWindow window;
         protected const float MAX_PITCH = 89f * MathF.PI / 180f;
-        protected static Key[] controlKeys = new Key[] { Key.W, Key.A, Key.S, Key.D, Key.Space, Key.ShiftLeft };
+        protected static Key[] controlKeys = [Key.W, Key.A, Key.S, Key.D, Key.Space, Key.ShiftLeft];
         protected static MouseButton[] mouseButtons = new MouseButton[] { MouseButton.Left, MouseButton.Right };
         protected static Dictionary<Key, bool> isPressed = new Dictionary<Key, bool>(controlKeys.Length);
         protected static Dictionary<MouseButton, bool> isMBPressed = new Dictionary<MouseButton, bool>(mouseButtons.Length);
         protected float mouseSensitivity;
 
-        public Controller(IWindow window, float mouseSensitivity = 0.002f) : base (window)
+        public Controller(IWindow window, float mouseSensitivity = 0.002f) : base(window)
         {
             this.window = window;
             window.Update -= OnUpdate;
@@ -55,7 +53,7 @@ namespace SilkyEngine.Sources.Controls
         }
 
         public override abstract void OnUpdate(double deltaTime);
-        protected abstract void OnMouseMove(IMouse mouse, PointF point);
+        protected abstract void OnMouseMove(IMouse mouse, Vector2 point);
         protected abstract void OnScroll(IMouse mouse, ScrollWheel wheel);
         protected virtual void OnMouseDown(IMouse mouse, MouseButton button)
         {
@@ -97,14 +95,14 @@ namespace SilkyEngine.Sources.Controls
                     window.CreateInput().Mice[0].Cursor.CursorMode = (window.CreateInput().Mice[0].Cursor.CursorMode == CursorMode.Disabled) ? CursorMode.Normal : CursorMode.Disabled;
                     break;
                 case Key.V:
-                    window.VSync = (window.VSync == VSyncMode.Off) ? VSyncMode.On : VSyncMode.Off;
+                    window.VSync = !window.VSync;
                     break;
                 case Key.P:
-                    gl = GL.GetApi();
+                    gl = GL.GetApi(window);
                     gl.PolygonMode(GLEnum.FrontAndBack, PolygonMode.Fill);
                     break;
                 case Key.L:
-                    gl = GL.GetApi();
+                    gl = GL.GetApi(window);
                     gl.PolygonMode(GLEnum.FrontAndBack, PolygonMode.Line);
                     break;
             }
@@ -114,21 +112,21 @@ namespace SilkyEngine.Sources.Controls
         {
             try
             {
-                Image<Rgba32> cursorImg = Image.Load<Rgba32>(cursorIconPath);
-                cursor.Type = CursorType.Custom;
-                cursor.Width = cursorImg.Width;
-                cursor.Height = cursorImg.Height;
-                byte[] pixels = new byte[cursor.Width * cursor.Height * 4];
-                var rgbaSpan = cursorImg.GetPixelSpan();
-                for (int i = 0; i < rgbaSpan.Length; i++)
-                {
-                    pixels[4 * i + 0] = rgbaSpan[i].R;
-                    pixels[4 * i + 1] = rgbaSpan[i].G;
-                    pixels[4 * i + 2] = rgbaSpan[i].B;
-                    pixels[4 * i + 3] = rgbaSpan[i].A;
-                }
-                cursor.Pixels = pixels;
-                cursorImg.Dispose();
+                // Image<Rgba32> cursorImg = Image.Load<Rgba32>(cursorIconPath);
+                // cursor.Type = CursorType.Custom;
+                // cursor.Width = cursorImg.Width;
+                // cursor.Height = cursorImg.Height;
+                // byte[] pixels = new byte[cursor.Width * cursor.Height * 4];
+                // var rgbaSpan = cursorImg.GetPixelSpan();
+                // for (int i = 0; i < rgbaSpan.Length; i++)
+                // {
+                //     pixels[4 * i + 0] = rgbaSpan[i].R;
+                //     pixels[4 * i + 1] = rgbaSpan[i].G;
+                //     pixels[4 * i + 2] = rgbaSpan[i].B;
+                //     pixels[4 * i + 3] = rgbaSpan[i].A;
+                // }
+                // cursor.Pixels = pixels;
+                // cursorImg.Dispose();
             }
             catch
             {

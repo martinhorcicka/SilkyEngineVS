@@ -1,13 +1,9 @@
-﻿using MathNet.Numerics.Optimization.LineSearch;
-using MathNet.Numerics.Providers.LinearAlgebra;
-using SilkyEngine.Sources.Behaviors;
+﻿using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 
 namespace SilkyEngine.Sources.Entities
 {

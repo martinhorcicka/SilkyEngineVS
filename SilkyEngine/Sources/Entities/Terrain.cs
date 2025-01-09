@@ -1,5 +1,4 @@
-﻿using MathNet.Numerics.Providers.LinearAlgebra;
-using SilkyEngine.Sources.Behaviors;
+﻿using SilkyEngine.Sources.Behaviors;
 using SilkyEngine.Sources.Graphics;
 using SilkyEngine.Sources.Physics.Collisions;
 using System.Collections.Generic;

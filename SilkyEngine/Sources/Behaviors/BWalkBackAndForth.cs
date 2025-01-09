@@ -1,4 +1,4 @@
-﻿using Silk.NET.Windowing.Common;
+﻿using Silk.NET.Windowing;
 using System.Numerics;
 
 namespace SilkyEngine.Sources.Behaviors

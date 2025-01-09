@@ -3,7 +3,6 @@ using System;
 using System.Numerics;
 using Silk.NET.OpenGL;
 using SilkyEngine.Sources.Interfaces;
-using SilkyEngine.Sources.Physics.Collisions;
 
 namespace SilkyEngine.Sources.Graphics
 {

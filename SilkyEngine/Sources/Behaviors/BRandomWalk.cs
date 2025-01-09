@@ -1,4 +1,4 @@
-﻿using Silk.NET.Windowing.Common;
+﻿using Silk.NET.Windowing;
 using SilkyEngine.Sources.Tools;
 using System;
 using System.Numerics;
