@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
-using Silk.NET.Input;
-using Silk.NET.Input.Common;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using Silk.NET.Windowing.Common;
 using SilkyEngine.Sources.Graphics;
-using SilkyEngine.Sources.Physics.Collisions;
 
 namespace SilkyEngine.Sources
 {
