@@ -1,6 +1,5 @@
 using System.Numerics;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -20,17 +19,7 @@ namespace SilkyEngine.Sources.Graphics
             img.Mutate(x => x.Flip(FlipMode.Vertical));
 
             var data = new byte[img.Width, img.Height];
-            imgData = new ImgData(data);
-            var pixels = img.GetPixelMemoryGroup();
-            var i = 0;
-            foreach (var pixelRow in pixels)
-            {
-                foreach (var pix in pixelRow.ToArray())
-                {
-                    imgData[i % img.Width, i / img.Width] = pix.R;
-                }
-                i++;
-            }
+            imgData = new ImgData(img);
             img.Dispose();
         }
 

@@ -1,3 +1,6 @@
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+
 namespace SilkyEngine.Sources.Graphics
 {
     public class ImgData
@@ -6,6 +9,21 @@ namespace SilkyEngine.Sources.Graphics
         private int width, height;
         public int Width => width;
         public int Height => height;
+
+        public ImgData(Image<Rgba32> image)
+        {
+            width = image.Width;
+            height = image.Height;
+            this.data = new byte[width, height];
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    data[x, y] = image[x, y].R;
+                }
+            }
+        }
+
         public ImgData(byte[,] data)
         {
             this.data = data;
@@ -32,7 +50,7 @@ namespace SilkyEngine.Sources.Graphics
                         return data[width - 1, j];
                     if (i >= width)
                         return data[width - 1, height - 1];
-                        
+
                     return data[i, height - 1];
                 }
                 return data[i, j];
